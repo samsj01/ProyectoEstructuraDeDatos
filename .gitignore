@@ -1,0 +1,15 @@
+# Archivos de compilación y temporales
+[Bb]in/
+[Oo]bj/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# El archivo que querías borrar
+*.slnx
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
