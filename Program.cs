@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 
@@ -25,11 +26,14 @@ namespace trabajo
             Console.WriteLine("Todos los usuarios han sido registrados.");
             Console.WriteLine("Presione cualquier tecla para salir...");
             Console.ReadKey();
+            // Acá se debe de llamar la función del menu de los usuarios.
+            // MenuUsuarios();
+            CompraProducto();
         }
 
         static string[] RegistroUser()
         {
-            string[] usuarios = { "Administrador", "Proveedor", "Caja" };
+            string[] usuarios = { "Administrador", "Almacén", "Caja" };
             string[] contraseñasGuardadas = new string[usuarios.Length];
 
             for (int i = 0; i < usuarios.Length; i++)
@@ -71,7 +75,6 @@ namespace trabajo
 
         
         /// Captura caracteres de consola ocultándolos con asteriscos.
-        
         static string LeerPassword()
         {
             string pass = "";
@@ -98,9 +101,81 @@ namespace trabajo
             return pass;
         }
 
-        static void UsuariosCreados(string archivosUsuarios)
+        static void CompraProducto()
         {
-           
+            List<string> productos = new List<string>();
+            List<int> cantidadProd = new List<int>();
+            List<double> precioProd = new List<double>();
+            //string archivoInventario = "Inventario.txt";
+            double presupuesto = 100000, precio, compraTotal = 0;
+            string addProduct="", producto;
+            int cantidad;
+            bool salir = false;
+            while (!salir)
+            {
+                do
+                {
+                    Console.Clear();
+                    Console.WriteLine("=== COMPRA DE PRODUCTOS ===");
+                    Console.WriteLine("SAlDO ACTUAL: " + presupuesto);
+                    Console.Write("\nIngrese el producto: ");
+                    producto = Console.ReadLine();
+                    Console.Write("\nIngrese el precio por unidad: ");
+                    precio = double.Parse(Console.ReadLine());
+                    Console.Write("\nIngrese la cantidad de unidades: ");
+                    cantidad = int.Parse(Console.ReadLine());
+
+                    for (int i = 0; i < cantidad; i++)
+                    {
+                        compraTotal += precio;
+                    }
+
+                    if (compraTotal >= presupuesto)
+                    {
+                        Console.WriteLine("El valor de la compra es igual o sobrepasa el presupuesto.\n" +
+                            "compre menos unidades o compre otro producto\n...");
+                        compraTotal = 0;
+                        Console.ReadKey();
+                        continue;
+                    }
+                    else
+                    {
+                        Console.WriteLine("\nla Compra ha sido exitosa, guardando en factura.");
+                        presupuesto -= compraTotal;
+                        
+                    }
+                    Console.WriteLine("SALDO ACTUAL: " + presupuesto);
+                    productos.Add(producto);
+                    precioProd.Add(precio);
+                    cantidadProd.Add(cantidad);
+
+                    Console.WriteLine("Producto Ingresado al inventario.");
+                    do
+                    {
+                        Console.WriteLine("¿Desea comprar otro producto? (si/no)");
+                        addProduct = Console.ReadLine().ToLower();
+                        if (!(addProduct == "si" || addProduct == "no"))
+                        {
+                            Console.WriteLine("Respuesta no válida: debes ser (si o no)");
+                        }
+                    } while (!(addProduct == "si" || addProduct == "no"));
+                } while (addProduct == "si");
+                if (addProduct == "no")
+                {
+                    salir = true;
+                }
+            }
+
+            Console.WriteLine("Final de la compra. Generando Factura.");
+            //FacturaCompra();
+            Console.WriteLine("presione cualquier tecla para volver al menú\n...");
+            Console.ReadKey();
+            Console.Clear(); 
+            //Menu();
+
+
+
+
         }
     }
 }
