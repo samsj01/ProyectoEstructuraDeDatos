@@ -1,18 +1,26 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+using System.IO;
+
 
 namespace trabajo
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static string archivoUsuarios = "usuarios.txt";
+        static void Main()
         {
-            // Llamamos al método y guardamos el resultado
-            string[] contraseñas = RegistroUser();
-
+            string[] contraseñas;
+            if (File.Exists(archivoUsuarios))
+            {
+                File.ReadAllLines(archivoUsuarios);
+            }
+            else
+            {
+                // Llamamos al método y guardamos el resultado
+                contraseñas = RegistroUser();
+                File.WriteAllLines(archivoUsuarios, contraseñas);
+                Console.WriteLine("Las contraseñas se han guardado correctamente. ");
+            }
             Console.WriteLine("=== PROCESO FINALIZADO ===");
             Console.WriteLine("Todos los usuarios han sido registrados.");
             Console.WriteLine("Presione cualquier tecla para salir...");
@@ -45,11 +53,11 @@ namespace trabajo
                     {
                         contraseñasGuardadas[i] = ingreso1;
                         coinciden = true;
-                        Console.WriteLine("\n\n[✔] Contraseña guardada correctamente.");
+                        Console.WriteLine("\n\nContraseña guardada correctamente.");
                     }
                     else
                     {
-                        Console.WriteLine("\n\n[✘] Error: Las contraseñas no coinciden o están vacías.");
+                        Console.WriteLine("\n\nError: Las contraseñas no coinciden o están vacías.");
                         Console.WriteLine("Intente de nuevo.");
                     }
 
@@ -61,9 +69,9 @@ namespace trabajo
             return contraseñasGuardadas;
         }
 
-        /// <summary>
+        
         /// Captura caracteres de consola ocultándolos con asteriscos.
-        /// </summary>
+        
         static string LeerPassword()
         {
             string pass = "";
@@ -88,6 +96,11 @@ namespace trabajo
             } while (key.Key != ConsoleKey.Enter);
 
             return pass;
+        }
+
+        static void UsuariosCreados(string archivosUsuarios)
+        {
+           
         }
     }
 }
