@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -73,33 +73,58 @@ namespace trabajo
             return contraseñasGuardadas;
         }
 
-        
+
         /// Captura caracteres de consola ocultándolos con asteriscos.
         static string LeerPassword()
         {
             string pass = "";
             ConsoleKeyInfo key;
 
+            // 1. Definimos las teclas que queremos ignorar completamente
+            ConsoleKey[] teclasIgnoradas = {
+            ConsoleKey.LeftArrow,
+            ConsoleKey.RightArrow,
+            ConsoleKey.UpArrow,
+            ConsoleKey.DownArrow,
+            ConsoleKey.Tab,
+            ConsoleKey.Escape,
+            ConsoleKey.Insert,
+            ConsoleKey.Home,
+            ConsoleKey.End,
+            ConsoleKey.Spacebar
+            };
             do
             {
-                key = Console.ReadKey(true); // El 'true' evita que la tecla se vea en pantalla
+                key = Console.ReadKey(true);
 
-                // Si no es Enter ni Borrar, agregamos el caracter
-                if (key.Key != ConsoleKey.Backspace && key.Key != ConsoleKey.Enter)
+                // 2. Primero verificamos si la tecla presionada está en nuestra lista negra
+                if (Array.Exists(teclasIgnoradas, t => t == key.Key))
+                {
+                    continue; // Salta al siguiente ciclo sin hacer nada
+                }
+
+                // 3. Lógica para borrar caracteres
+                if (key.Key == ConsoleKey.Backspace)
+                {
+                    if (pass.Length > 0)
+                    {
+                        pass = pass.Substring(0, (pass.Length - 1));
+                        Console.Write("\b \b");
+                    }
+                }
+                // 4. Si no es Enter y no es Backspace, agregamos el caracter
+                else if (key.Key != ConsoleKey.Enter)
                 {
                     pass += key.KeyChar;
                     Console.Write("*");
                 }
-                // Si es Borrar y hay texto, eliminamos el último caracter
-                else if (key.Key == ConsoleKey.Backspace && pass.Length > 0)
-                {
-                    pass = pass.Substring(0, (pass.Length - 1));
-                    Console.Write("\b \b"); // Mueve el cursor atrás, escribe espacio y vuelve atrás
-                }
+
             } while (key.Key != ConsoleKey.Enter);
 
+            Console.WriteLine(); // Salto de línea al terminar
             return pass;
         }
+
 
         static void CompraProducto()
         {
@@ -108,7 +133,7 @@ namespace trabajo
             List<double> precioProd = new List<double>();
             //string archivoInventario = "Inventario.txt";
             double presupuesto = 100000, precio, compraTotal = 0;
-            string addProduct="", producto;
+            string addProduct = "", producto;
             int cantidad;
             bool salir = false;
             while (!salir)
@@ -142,7 +167,7 @@ namespace trabajo
                     {
                         Console.WriteLine("\nla Compra ha sido exitosa, guardando en factura.");
                         presupuesto -= compraTotal;
-                        
+
                     }
                     Console.WriteLine("SALDO ACTUAL: " + presupuesto);
                     productos.Add(producto);
@@ -170,12 +195,14 @@ namespace trabajo
             //FacturaCompra();
             Console.WriteLine("presione cualquier tecla para volver al menú\n...");
             Console.ReadKey();
-            Console.Clear(); 
+            Console.Clear();
             //Menu();
 
 
 
 
         }
+
+      
     }
 }
