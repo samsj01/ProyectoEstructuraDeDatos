@@ -73,8 +73,6 @@ namespace trabajo
             return contraseñasGuardadas;
         }
 
-
-        /// Captura caracteres de consola ocultándolos con asteriscos.
         static string LeerPassword()
         {
             string pass = "";
@@ -120,12 +118,30 @@ namespace trabajo
                     Console.Clear();
                     Console.WriteLine("=== COMPRA DE PRODUCTOS ===");
                     Console.WriteLine("SAlDO ACTUAL: " + presupuesto);
+
                     Console.Write("\nIngrese el producto: ");
-                    producto = Console.ReadLine();
-                    Console.Write("\nIngrese el precio por unidad: ");
-                    precio = double.Parse(Console.ReadLine());
-                    Console.Write("\nIngrese la cantidad de unidades: ");
-                    cantidad = int.Parse(Console.ReadLine());
+                    producto = Console.ReadLine().ToLower();
+                    int indice = productos.IndexOf(producto);
+                    bool productoExiste = false;
+                    if(indice != -1)
+                    {
+                        productoExiste=true;
+                        Console.WriteLine($"\nEl producto ya se encuentra en el inventario {producto}. Precio actual: {precioProd[indice]}");
+                        Console.Write("\nIngrese la cantidad de unidades que desee agregar: ");
+                        cantidad = int.Parse(Console.ReadLine());
+                        precio = precioProd[indice];
+                    }
+                    else
+                    {
+                        Console.WriteLine("\n¡¡PRODUCTO NUEVO!!");
+                        Console.Write("\nIngrese el precio por unidad: ");
+                        precio = double.Parse(Console.ReadLine());
+                        Console.Write("\nIngrese la cantidad de unidades que desee comprar: ");
+                        cantidad = int.Parse(Console.ReadLine());
+                        
+                    }
+                    
+                    
 
                     for (int i = 0; i < cantidad; i++)
                     {
@@ -151,6 +167,8 @@ namespace trabajo
                     precioProd.Add(precio);
                     cantidadProd.Add(cantidad);
 
+                    GuardarInventario(productos, precioProd, cantidadProd, productoExiste);
+
                     Console.WriteLine("Producto Ingresado al inventario.");
                     do
                     {
@@ -174,12 +192,19 @@ namespace trabajo
             Console.ReadKey();
             Console.Clear();
             //Menu();
-
-
-
-
         }
+        static void GuardarInventario(List<string> producto, List<double> precio, List<int> cantidad, bool existe)
+        {
+            string archivoInventario = "inventario.csv";
+            List<string> lineas = new List<string>();
+            lineas.Add("Nombre;Precio;Cantidad");
 
-      
+            for (int i = 0; i < producto.Count; i++)
+            {
+                lineas.Add($"{producto[i]};{precio[i]};{cantidad[i]}");
+            }
+
+            File.WriteAllLines(archivoInventario, lineas);
+        }
     }
 }
