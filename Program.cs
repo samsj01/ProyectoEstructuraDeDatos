@@ -19,23 +19,7 @@ namespace trabajo
             List<double> precioProd = new List<double>();
             RecargarProductos(productos, precioProd, cantidadProd, archivoInventario);
 
-            string[] contraseñas;
-            string archivoUsuarios = "usuarios.txt";
-            if (File.Exists(archivoUsuarios))
-            {
-                File.ReadAllLines(archivoUsuarios);
-            }
-            else
-            {
-                // Llamamos al método y guardamos el resultado
-                contraseñas = RegistroUser();
-                File.WriteAllLines(archivoUsuarios, contraseñas);
-                Console.WriteLine("Las contraseñas se han guardado correctamente. ");
-            }
-            Console.WriteLine("=== PROCESO FINALIZADO ===");
-            Console.WriteLine("Todos los usuarios han sido registrados.");
-            Console.WriteLine("Presione cualquier tecla para salir...");
-            Console.ReadKey();
+            string[] contraseñas = InicializarUsuarios();
             // Acá se debe de llamar la función del menu de los usuarios.
             // MenuUsuarios();
             CompraProducto(productos, cantidadProd, precioProd, archivoInventario,presupuesto);
@@ -294,6 +278,31 @@ namespace trabajo
 
             string linea = $"{tipo};{monto};{nuevoSaldo}";
             File.AppendAllText("costos_e_ingresos.csv", linea + Environment.NewLine);
+        }
+        static string[] InicializarUsuarios()
+        {
+            string archivoUsuarios = "usuarios.txt";
+            string[] contraseñas;
+
+            if (File.Exists(archivoUsuarios))
+            {
+                contraseñas = File.ReadAllLines(archivoUsuarios);
+            }
+            else
+            {
+                // Llamamos al registro si no existe el archivo
+                contraseñas = RegistroUser();
+                File.WriteAllLines(archivoUsuarios, contraseñas);
+                Console.WriteLine("Las contraseñas se han guardado correctamente.");
+            }
+
+            Console.WriteLine("=== PROCESO FINALIZADO ===");
+            Console.WriteLine("Todos los usuarios han sido registrados.");
+            Console.WriteLine("Presione cualquier tecla para continuar...");
+            Console.ReadKey();
+            Console.Clear();
+
+            return contraseñas; // Devolvemos las contraseñas cargadas
         }
     }
 }
