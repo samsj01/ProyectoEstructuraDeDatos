@@ -22,7 +22,9 @@ namespace trabajo
             string[] contraseñas = InicializarUsuarios();
             // Acá se debe de llamar la función del menu de los usuarios.
             // MenuUsuarios();
-            CompraProducto(productos, cantidadProd, precioProd, archivoInventario,presupuesto);
+            Inventario(productos, cantidadProd, precioProd, presupuesto);
+            VenderProductos(productos, cantidadProd, precioProd, archivoInventario, presupuesto);
+            CompraProducto(productos, cantidadProd, precioProd, archivoInventario, presupuesto);
         }
 
         // ============ FUNCIONES PRINCIPALES ===============
@@ -68,7 +70,7 @@ namespace trabajo
             return contraseñasGuardadas;
         }
 
-
+        //-----------------------------------------------------------------------------------------------------------------------
         static void CompraProducto(List<string> productos, List<int> cantidadProd,
             List<double> precioProd, string archivoInventario, Stack<double> presupuesto)
         {
@@ -77,7 +79,6 @@ namespace trabajo
             int cantidad;
             bool salir = false;
             double saldoProvicional = saldoActual;// es para mostrar como va quedando el saldo por cada movimiento sin alterar el saldo original
-
             while (!salir)
             {
                 do
@@ -89,10 +90,9 @@ namespace trabajo
                     Console.Write("\nIngrese el producto: ");
                     producto = Console.ReadLine().ToLower();
                     int indice = productos.IndexOf(producto);
-                    bool productoExiste = false;
                     if (indice != -1)
                     {
-                        productoExiste = true;
+
                         Console.WriteLine($"\nEl producto ya se encuentra en el inventario {producto}. Precio actual: {precioProd[indice]}");
                         Console.Write("\nIngrese la cantidad de unidades que desee agregar: ");
                         cantidad = int.Parse(Console.ReadLine());
@@ -156,7 +156,7 @@ namespace trabajo
 
                     }
 
-                    GuardarInventario(productos, precioProd, cantidadProd, productoExiste, archivoInventario);
+                    GuardarInventario(productos, precioProd, cantidadProd, archivoInventario);
                     RegistrarMovimiento(presupuesto, tipo, compraTotal);
 
                     Console.WriteLine("Producto Ingresado al inventario.");
@@ -183,10 +183,114 @@ namespace trabajo
             Console.Clear();
             //Menu();
         }
+        //-----------------------------------------------------------------------------------------------------------------------
+        static void Inventario(List<string> productos, List<int> cantidadProd, List<double> precioProd, Stack<double>presupuesto)
+        {
+            double saldo = presupuesto.Peek();
+            Console.SetCursorPosition(5,0);
+            Console.WriteLine($"SALDO ACTUAL: {saldo}");
+            for (int i = 0; i < productos.Count; i++)
+            {
+                int x = 5 + (20 * i);
+                int y = 2;
+               
+
+                Console.SetCursorPosition(x, y);
+                Console.Write($"PRODUCTO {i + 1}");
+
+                Console.SetCursorPosition(x, y + 1);
+                Console.Write($"Producto: {productos[i].ToUpper()}");
+
+                Console.SetCursorPosition(x, y + 2);
+                Console.Write($"Cantidad: {cantidadProd[i]}");
+
+                Console.SetCursorPosition(x, y + 3);
+                Console.Write($"Precio: {precioProd[i] /0.8}");
+                
+            }
+            Console.SetCursorPosition(5, 10);
+            Console.Write("presione cualquier tecla para volver al menú\n...");
+            Console.ReadKey();
+            Console.Clear();
+            //Menu();
+        }
+        //-----------------------------------------------------------------------------------------------------------------------
+        static void VenderProductos(List<string> productos, List<int> cantidadProd, List<double> precioProd, string archivoInventario, Stack<double> presupuesto)
+        {
+            string continuar = "";
+            do
+            {
+                //Salida del saldo que hay en caja y qué es 
+                // Usamos Peek para tener siempre el saldo actualizado de la pila
+                double saldoActual = presupuesto.Peek();
+
+                Console.Clear();
+                Console.WriteLine("========== Venta de productos ========");
+                Console.WriteLine("---------------- CAJA ----------------");
+                Console.WriteLine($"Saldo Actual: {saldoActual:C}"); /// la :C muestra los decimalees o peso en este caso
+                Console.WriteLine("....................................");
+
+                //Aquí se preguta por el prodcuto
+                Console.Write("\nIngrese el nombre del producto: ");
+                string buscarProd = Console.ReadLine().ToLower();// variable para que el coso busque y ponga el nomb del prod ya sea minuscual o mayuscula
+
+                int indice = productos.IndexOf(buscarProd); // Aquí se busca el producto
+
+                if (indice != -1)
+                {
+                    Console.WriteLine($"Producto encontrado: {productos[indice]}");
+                    Console.WriteLine($"Precio por unidad: {precioProd[indice]/0.8:C}");
+                    Console.WriteLine($"Stock disponible: {cantidadProd[indice]}");
+
+                    Console.Write("\nUnidades a vender: ");
+                    // Validamos que el usuario ingrese un número para no dañar el programa y explote
+                    if (int.TryParse(Console.ReadLine(), out int cantVenta))
+                    {
+                        if (cantVenta > 0 && cantVenta <= cantidadProd[indice])
+                        {
+                            //Se multiplica la cantidad a vender  por el precio por unidad 
+                            double totalVenta = cantVenta * precioProd[indice] / 0.8;
+
+                            // Actualizamos las listas del inventario
+                            cantidadProd[indice] -= cantVenta;
+
+                            // Registrar la nueva venta (Ingreso) en la pila
+                            RegistrarMovimiento(presupuesto, "Ingreso", totalVenta);
+
+                            // Guardamos los cambios en el archivo
+                            GuardarInventario(productos, precioProd, cantidadProd, archivoInventario);
+
+                            Console.WriteLine("\nVenta realizada exitosamente");
+                            Console.WriteLine($"Total a pagar: {totalVenta:C}");
+                            Console.WriteLine($"Nuevo saldo en caja: {presupuesto.Peek():C}");
+                        }
+                        else
+                        {
+                            Console.WriteLine("\nError: No hay suficiente cantidad o número no válido.");
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("\nEl producto no existe en el inventario.");
+                }
+
+                // Bucle para validar que solo responda si o no
+                do
+                {
+                    Console.Write("\n¿Desea registrar otro producto? (si/no): ");
+                    continuar = Console.ReadLine().ToLower();
+                } while (continuar != "si" && continuar != "no" && continuar != "s" && continuar != "n");
+
+            } while (continuar == "si" || continuar == "s");
+
+            Console.WriteLine("\nPresione cualquier tecla para volver al menú...");
+            Console.ReadKey();
+        }
 
         // =============== FUNCIONES AUXILIARES Y CONTROL =====================
         static void GuardarInventario(List<string> producto, List<double> precio, List<int> cantidad,
-            bool existe, string archivoInventario)
+             string archivoInventario)
         {
 
             List<string> lineas = new List<string>();
@@ -199,7 +303,7 @@ namespace trabajo
 
             File.WriteAllLines(archivoInventario, lineas);
         }
-
+        //-----------------------------------------------------------------------------------------------------------------------
         static void RecargarProductos(List<string> producto, List<double> precio,
             List<int> cantidad, string archivoInventario)
         {
@@ -216,6 +320,7 @@ namespace trabajo
                 cantidad.Add(int.Parse(ProduDatos[2]));
             }
         }
+        //-----------------------------------------------------------------------------------------------------------------------
         static string LeerPassword()
         {
             string pass = "";
@@ -243,12 +348,12 @@ namespace trabajo
             Console.WriteLine();
             return pass;
         }
-
+        //-----------------------------------------------------------------------------------------------------------------------
         static void CargarPresupuesto(Stack<double> pila)
         {
             string archivoCostos = "costos_e_ingresos.csv";
 
-            if(!File.Exists(archivoCostos))
+            if (!File.Exists(archivoCostos))
             {
                 pila.Push(100000);
                 return;
@@ -263,7 +368,7 @@ namespace trabajo
                 pila.Push(saldo);
             }
         }
-
+        //-----------------------------------------------------------------------------------------------------------------------
         static void RegistrarMovimiento(Stack<double> pila, string tipo, double monto)
         {
             double saldoActual = pila.Peek();
@@ -279,6 +384,7 @@ namespace trabajo
             string linea = $"{tipo};{monto};{nuevoSaldo}";
             File.AppendAllText("costos_e_ingresos.csv", linea + Environment.NewLine);
         }
+        //-----------------------------------------------------------------------------------------------------------------------
         static string[] InicializarUsuarios()
         {
             string archivoUsuarios = "usuarios.txt";
