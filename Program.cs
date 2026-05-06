@@ -34,6 +34,24 @@ namespace trabajo
             bool accesoConcedido = false;
             while (!accesoConcedido)
             {
+                string salir;
+                do
+                {
+                    Console.WriteLine("¿DESEA SALIR DEL PROGRAMA? (si o no)");
+                    salir = Console.ReadLine().ToLower();
+                    if (salir == "si")
+                    {
+                        return;
+                    }
+                    else if(salir != "si" & salir != "no")
+                    {
+                        Console.WriteLine("Ingrese un valor valido (si/no)");
+                        Console.ReadKey();
+                        Console.Clear();
+                    }
+                } while (salir != "si" & salir != "no");
+                
+                Console.Clear();
                 Console.WriteLine("BIENVENIDO AL MINI MERCADO");
                 Console.Write("Usuario: ");
                 string usuarioIngresado = Console.ReadLine();
@@ -87,33 +105,69 @@ namespace trabajo
         static void MenuAdministrador(string[] roles, string[] contraseñas, List<string> productos, List<int> cantidadProd,
             List<double> precioProd, string archivoInventario, Stack<double> presupuesto)
         {
-            Console.WriteLine(" MENÚ ADMINISTRADOR");
-            Console.WriteLine("1. Ver Inventario");
-            Console.WriteLine("2. Comprar Productos (Gestionar)");
-            Console.WriteLine("3. Realizar Venta (Salida)");
-            Console.WriteLine("4. Salir");
-            Console.Write("Opción: ");
-            string op = Console.ReadLine();
+            bool volver = false;
+            while (!volver)
+            {
+                Console.WriteLine(" MENÚ ADMINISTRADOR");
+                Console.WriteLine("1. Ver Inventario");
+                Console.WriteLine("2. Comprar Productos (Gestionar)");
+                Console.WriteLine("3. Realizar Venta (Salida)");
+                Console.WriteLine("4. Salir");
+                Console.Write("Opción: ");
+                string op = Console.ReadLine();
 
-            if (op == "1") Inventario(productos, cantidadProd, precioProd, presupuesto);
-            else if (op == "2") CompraProducto(productos, cantidadProd, precioProd, archivoInventario, presupuesto);
-            else if (op == "3") VenderProductos(productos, cantidadProd, precioProd, archivoInventario, presupuesto);
-            else if (op == "4") MenuPrincipal(roles, contraseñas, productos, cantidadProd, precioProd, archivoInventario, presupuesto);
+                if (op == "1")
+                {
+                    Inventario(productos, cantidadProd, precioProd, presupuesto);
+                }
+                else if (op == "2")
+                {
+                    CompraProducto(productos, cantidadProd, precioProd, archivoInventario, presupuesto);
+                }
+
+                else if (op == "3")
+                {
+                    VenderProductos(productos, cantidadProd, precioProd, archivoInventario, presupuesto);
+                }
+
+                else if (op == "4")
+                {
+                    volver = true;
+                    MenuPrincipal(roles, contraseñas, productos, cantidadProd, precioProd, archivoInventario, presupuesto);
+                }
+            }
+            
         }
 
         static void MenuProveedor(string[] roles, string[] contraseñas, List<string> productos, List<int> cantidadProd,
             List<double> precioProd, string archivoInventario, Stack<double> presupuesto)
         {
-            Console.WriteLine(" MENÚ PROVEEDOR / ALMACÉN");
-            Console.WriteLine("1. Ver Inventario (Pedidos)");
-            Console.WriteLine("2. Cargar Stock de Productos");
-            Console.WriteLine("3. Salir");
-            Console.Write("Opción: ");
-            string op = Console.ReadLine();
+            bool volver = false;
+            while (!volver)
+            {
+                Console.WriteLine(" MENÚ PROVEEDOR / ALMACÉN");
+                Console.WriteLine("1. Ver Inventario (Pedidos)");
+                Console.WriteLine("2. Cargar Stock de Productos");
+                Console.WriteLine("3. Salir");
+                Console.Write("Opción: ");
+                string op = Console.ReadLine();
 
-            if (op == "1") Inventario(productos, cantidadProd, precioProd, presupuesto);
-            else if (op == "2") CompraProducto(productos, cantidadProd, precioProd, archivoInventario, presupuesto);
-            else if (op == "3") MenuPrincipal(roles, contraseñas, productos, cantidadProd, precioProd, archivoInventario, presupuesto);
+                if (op == "1")
+                {
+                    Inventario(productos, cantidadProd, precioProd, presupuesto);
+                }
+                else if (op == "2")
+                {
+                    CompraProducto(productos, cantidadProd, precioProd, archivoInventario, presupuesto);
+                }
+                else if (op == "3")
+                {
+                    volver = true;
+                    MenuPrincipal(roles, contraseñas, productos, cantidadProd, precioProd, archivoInventario, presupuesto);
+                }
+            }
+            
+
         }
 
 
@@ -142,9 +196,10 @@ namespace trabajo
                 else if (op == "3")
                 {
                     volver = true; // Rompe el bucle y vuelve al Login
+                    MenuPrincipal(roles, contraseñas, productos, cantidadProd, precioProd, archivoInventario, presupuesto);
                 }
             }
-        
+
         }
 
         // ============ FUNCIONES PRINCIPALES ===============
@@ -261,6 +316,7 @@ namespace trabajo
                 if (addProduct == "no") salir = true;
             }
             Console.Clear();
+            return;
         }
 
         static void Inventario(List<string> productos, List<int> cantidadProd, List<double> precioProd, Stack<double> presupuesto)
@@ -281,6 +337,7 @@ namespace trabajo
             Console.Write("Presione cualquier tecla para volver...");
             Console.ReadKey();
             Console.Clear();
+            return;
         }
 
         static void VenderProductos(List<string> productos, List<int> cantidadProd, List<double> precioProd, string archivoInventario, Stack<double> presupuesto)
@@ -298,36 +355,36 @@ namespace trabajo
                 return; //Regresa al menú anterior
             }
 
-                do
+            do
+            {
+                double saldoActual = presupuesto.Peek();
+                Console.Clear();
+                Console.WriteLine("========== Venta de productos ========");
+                Console.WriteLine($"Saldo Actual: {saldoActual:C}");
+                Console.Write("\nIngrese el nombre del producto: ");
+                string buscarProd = Console.ReadLine().ToLower();
+                int indice = productos.IndexOf(buscarProd);
+
+                if (indice != -1)
                 {
-                    double saldoActual = presupuesto.Peek();
-                    Console.Clear();
-                    Console.WriteLine("========== Venta de productos ========");
-                    Console.WriteLine($"Saldo Actual: {saldoActual:C}");
-                    Console.Write("\nIngrese el nombre del producto: ");
-                    string buscarProd = Console.ReadLine().ToLower();
-                    int indice = productos.IndexOf(buscarProd);
-
-                    if (indice != -1)
+                    Console.WriteLine($"Producto: {productos[indice]} | Stock: {cantidadProd[indice]}");
+                    Console.Write("Unidades a vender: ");
+                    if (int.TryParse(Console.ReadLine(), out int cantVenta) && cantVenta <= cantidadProd[indice] && cantVenta > 0)
                     {
-                        Console.WriteLine($"Producto: {productos[indice]} | Stock: {cantidadProd[indice]}");
-                        Console.Write("Unidades a vender: ");
-                        if (int.TryParse(Console.ReadLine(), out int cantVenta) && cantVenta <= cantidadProd[indice] && cantVenta > 0)
-                        {
-                            double totalVenta = cantVenta * precioProd[indice] / 0.8;
-                            cantidadProd[indice] -= cantVenta;
-                            RegistrarMovimiento(presupuesto, "Ingreso", totalVenta);
-                            GuardarInventario(productos, precioProd, cantidadProd, archivoInventario);
-                            Console.WriteLine($"\nVenta exitosa. Total: {totalVenta:C}");
-                        }
-                        else { Console.WriteLine("Cantidad no válida."); }
+                        double totalVenta = cantVenta * precioProd[indice] / 0.8;
+                        cantidadProd[indice] -= cantVenta;
+                        RegistrarMovimiento(presupuesto, "Ingreso", totalVenta);
+                        GuardarInventario(productos, precioProd, cantidadProd, archivoInventario);
+                        Console.WriteLine($"\nVenta exitosa. Total: {totalVenta:C}");
                     }
-                    else { Console.WriteLine("El producto no existe."); }
+                    else { Console.WriteLine("Cantidad no válida."); }
+                }
+                else { Console.WriteLine("El producto no existe."); }
 
-                    Console.Write("\n¿Desea registrar otro producto? (si/no): ");
-                    continuar = Console.ReadLine().ToLower();
-                } while (continuar == "si" || continuar == "s");
-            
+                Console.Write("\n¿Desea registrar otro producto? (si/no): ");
+                continuar = Console.ReadLine().ToLower();
+            } while (continuar == "si" || continuar == "s");
+            return;
 
         }
 
@@ -340,7 +397,10 @@ namespace trabajo
 
         static void RecargarProductos(List<string> producto, List<double> precio, List<int> cantidad, string archivoInventario)
         {
-            if (!File.Exists(archivoInventario)) return;
+            if (!File.Exists(archivoInventario))
+            {
+                return;
+            }
             string[] lineas = File.ReadAllLines(archivoInventario);
             for (int i = 1; i < lineas.Length; i++)
             {
@@ -370,7 +430,11 @@ namespace trabajo
         static void CargarPresupuesto(Stack<double> pila)
         {
             string archivoCostos = "costos_e_ingresos.csv";
-            if (!File.Exists(archivoCostos)) { pila.Push(100000); return; }
+            if (!File.Exists(archivoCostos)) 
+            { 
+                pila.Push(100000); 
+                return; 
+            }
             string[] lineas = File.ReadAllLines(archivoCostos);
             foreach (string linea in lineas)
             {
@@ -390,7 +454,10 @@ namespace trabajo
         static string[] InicializarUsuarios()
         {
             string archivoUsuarios = "usuarios.txt";
-            if (File.Exists(archivoUsuarios)) return File.ReadAllLines(archivoUsuarios);
+            if (File.Exists(archivoUsuarios))
+            {
+                return File.ReadAllLines(archivoUsuarios);
+            }
             string[] contraseñas = RegistroUser();
             File.WriteAllLines(archivoUsuarios, contraseñas);
             return contraseñas;
