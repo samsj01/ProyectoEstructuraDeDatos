@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Threading;
 
@@ -9,10 +10,10 @@ namespace trabajo
     {
         static void Main()
         {
-           
+
             Stack<double> presupuesto = new Stack<double>();
             CargarPresupuesto(presupuesto);
-             
+
             string archivoInventario = "inventario.csv";
             List<string> productos = new List<string>();
             List<int> cantidadProd = new List<int>();
@@ -20,60 +21,70 @@ namespace trabajo
             RecargarProductos(productos, precioProd, cantidadProd, archivoInventario);
 
             string[] contraseñas = InicializarUsuarios();
-
-            string[] roles = { "Administrador", "Almacén", "Caja" };
-
-            Console.Clear();
-            Console.WriteLine(" BIENVENIDO AL MINI MERCADO");
-            Console.Write("Usuario: ");
-            string usuarioIngresado = Console.ReadLine();
-
-            Console.Write("Contraseña: ");
-            string claveIngresada = LeerPassword(); 
-
-            bool accesoConcedido = false;
-            string rolAsignado = "";
-
-            for (int i = 0; i < roles.Length; i++)
-            {
-                
-                if (roles[i].ToLower() == usuarioIngresado.ToLower() && contraseñas[i] == claveIngresada)
-                {
-                    accesoConcedido = true;
-                    rolAsignado = roles[i];
-                    break;
-                }
-            }
-
-           
-            if (accesoConcedido)
-            {
-                Console.Clear();
-                Console.WriteLine($"Bienvenido/a, {usuarioIngresado}. Rol: {rolAsignado}\n");
-
-                if (rolAsignado == "Administrador")
-                {
-                    MenuAdministrador(productos, cantidadProd, precioProd, archivoInventario, presupuesto);
-                }
-                else if (rolAsignado == "Almacén") 
-                {
-                    MenuProveedor(productos, cantidadProd, precioProd, archivoInventario, presupuesto);
-                }
-                else if (rolAsignado == "Caja")
-                {
-                    MenuCaja(productos, cantidadProd, precioProd, archivoInventario, presupuesto);
-                }
-            }
-            else
-            {
-                Console.WriteLine("Error: Usuario o contraseña incorrectos.");
-                Console.ReadKey();
-            }
+            string[] roles = { "Administrador", "Almacen", "Caja" };
+            MenuPrincipal(roles, contraseñas, productos, cantidadProd, precioProd, archivoInventario, presupuesto);
+            
         }
 
-      
+        static void MenuPrincipal(string[] roles, string[] contraseñas, List<string> productos, List<int> cantidadProd, 
+            List<double> precioProd, string archivoInventario, Stack<double> presupuesto)
+        {
+            Console.Clear();
+            bool accesoConcedido = false;
+            while (!accesoConcedido)
+            {
+                Console.WriteLine("BIENVENIDO AL MINI MERCADO");
+                Console.Write("Usuario: ");
+                string usuarioIngresado = Console.ReadLine();
 
-        static void MenuAdministrador(List<string> p, List<int> c, List<double> pr, string arc, Stack<double> pres)
+                Console.Write("Contraseña: ");
+                string claveIngresada = LeerPassword();
+                string rolAsignado = "";
+
+                for (int i = 0; i < roles.Length; i++)
+                {
+
+                    if (roles[i].ToLower() == usuarioIngresado.ToLower() && contraseñas[i] == claveIngresada)
+                    {
+                        accesoConcedido = true;
+                        rolAsignado = roles[i];
+                        break;
+                    }
+                }
+
+                if (accesoConcedido)
+                {
+                    Console.Clear();
+                    Console.WriteLine($"Bienvenido/a, {usuarioIngresado}. Rol: {rolAsignado}\n");
+
+                    if (rolAsignado == "Administrador")
+                    {
+                        MenuAdministrador(roles, contraseñas, productos, cantidadProd, precioProd, archivoInventario, presupuesto);
+                    }
+                    else if (rolAsignado == "Almacen")
+                    {
+                        MenuProveedor(roles, contraseñas, productos, cantidadProd, precioProd, archivoInventario, presupuesto);
+                    }
+                    else if (rolAsignado == "Caja")
+                    {
+                        MenuCaja(roles, contraseñas, productos, cantidadProd, precioProd, archivoInventario, presupuesto);
+                    }
+                }
+                else
+                {
+                    Console.Write("Error: Usuario o contraseña incorrectos.\n...");
+                    Console.ReadKey();
+                    Console.Clear();
+                }
+            }
+            
+
+
+            
+        }
+
+        static void MenuAdministrador(string[] roles, string[] contraseñas, List<string> productos, List<int> cantidadProd,
+            List<double> precioProd, string archivoInventario, Stack<double> presupuesto)
         {
             Console.WriteLine(" MENÚ ADMINISTRADOR");
             Console.WriteLine("1. Ver Inventario");
@@ -83,12 +94,14 @@ namespace trabajo
             Console.Write("Opción: ");
             string op = Console.ReadLine();
 
-            if (op == "1") Inventario(p, c, pr, pres);
-            else if (op == "2") CompraProducto(p, c, pr, arc, pres);
-            else if (op == "3") VenderProductos(p, c, pr, arc, pres);
+            if (op == "1") Inventario(productos, cantidadProd, precioProd, presupuesto);
+            else if (op == "2") CompraProducto(productos, cantidadProd, precioProd, archivoInventario, presupuesto);
+            else if (op == "3") VenderProductos(productos, cantidadProd, precioProd, archivoInventario, presupuesto);
+            else if (op == "4") MenuPrincipal(roles, contraseñas, productos, cantidadProd, precioProd, archivoInventario, presupuesto);
         }
 
-        static void MenuProveedor(List<string> p, List<int> c, List<double> pr, string arc, Stack<double> pres)
+        static void MenuProveedor(string[] roles, string[] contraseñas, List<string> productos, List<int> cantidadProd,
+            List<double> precioProd, string archivoInventario, Stack<double> presupuesto)
         {
             Console.WriteLine(" MENÚ PROVEEDOR / ALMACÉN");
             Console.WriteLine("1. Ver Inventario (Pedidos)");
@@ -97,11 +110,14 @@ namespace trabajo
             Console.Write("Opción: ");
             string op = Console.ReadLine();
 
-            if (op == "1") Inventario(p, c, pr, pres);
-            else if (op == "2") CompraProducto(p, c, pr, arc, pres);
+            if (op == "1") Inventario(productos, cantidadProd, precioProd, presupuesto);
+            else if (op == "2") CompraProducto(productos, cantidadProd, precioProd, archivoInventario, presupuesto);
+            else if (op == "3") MenuPrincipal(roles, contraseñas, productos, cantidadProd, precioProd, archivoInventario, presupuesto);
         }
+        
 
-        static void MenuCaja(List<string> p, List<int> c, List<double> pr, string arc, Stack<double> pres)
+        static void MenuCaja(string[] roles, string[] contraseñas, List<string> productos, List<int> cantidadProd,
+            List<double> precioProd, string archivoInventario, Stack<double> presupuesto)
         {
             Console.WriteLine(" MENÚ DE CAJA ");
             Console.WriteLine("1. Realizar Venta");
@@ -110,11 +126,12 @@ namespace trabajo
             Console.Write("Opción: ");
             string op = Console.ReadLine();
 
-            if (op == "1") VenderProductos(p, c, pr, arc, pres);
-            else if (op == "2") Inventario(p, c, pr, pres);
+            if (op == "1") VenderProductos(productos, cantidadProd, precioProd, archivoInventario, presupuesto);
+            else if (op == "2") Inventario(productos, cantidadProd, precioProd, presupuesto);
+            else if (op == "3") MenuPrincipal(roles, contraseñas, productos, cantidadProd, precioProd, archivoInventario, presupuesto);
         }
 
-        // ============ FUNCIONES ORIGINALES (SIN CAMBIOS) ===============
+        // ============ FUNCIONES PRINCIPALES ===============
 
         static string[] RegistroUser()
         {
