@@ -34,22 +34,7 @@ namespace trabajo
             bool accesoConcedido = false;
             while (!accesoConcedido)
             {
-                string salir;
-                do
-                {
-                    Console.WriteLine("¿DESEA SALIR DEL PROGRAMA? (si o no)");
-                    salir = Console.ReadLine().ToLower();
-                    if (salir == "si")
-                    {
-                        return;
-                    }
-                    else if(salir != "si" & salir != "no")
-                    {
-                        Console.WriteLine("Ingrese un valor valido (si/no)");
-                        Console.ReadKey();
-                        Console.Clear();
-                    }
-                } while (salir != "si" & salir != "no");
+                
                 
                 Console.Clear();
                 Console.WriteLine("BIENVENIDO AL MINI MERCADO");
@@ -133,7 +118,7 @@ namespace trabajo
                 else if (op == "4")
                 {
                     volver = true;
-                    MenuPrincipal(roles, contraseñas, productos, cantidadProd, precioProd, archivoInventario, presupuesto);
+                    Salir(roles, contraseñas, productos, cantidadProd, precioProd, archivoInventario, presupuesto);
                 }
             }
             
@@ -163,7 +148,7 @@ namespace trabajo
                 else if (op == "3")
                 {
                     volver = true;
-                    MenuPrincipal(roles, contraseñas, productos, cantidadProd, precioProd, archivoInventario, presupuesto);
+                    Salir(roles, contraseñas, productos, cantidadProd, precioProd, archivoInventario, presupuesto);
                 }
             }
             
@@ -196,7 +181,7 @@ namespace trabajo
                 else if (op == "3")
                 {
                     volver = true; // Rompe el bucle y vuelve al Login
-                    MenuPrincipal(roles, contraseñas, productos, cantidadProd, precioProd, archivoInventario, presupuesto);
+                    Salir(roles, contraseñas, productos, cantidadProd, precioProd, archivoInventario, presupuesto);
                 }
             }
 
@@ -462,6 +447,32 @@ namespace trabajo
             string[] contraseñas = RegistroUser();
             File.WriteAllLines(archivoUsuarios, contraseñas);
             return contraseñas;
+        }
+
+        static void Salir(string[] roles, string[] contraseñas, List<string> productos, List<int> cantidadProd,
+            List<double> precioProd, string archivoInventario, Stack<double> presupuesto)
+        {
+            Console.Clear();
+            string salir;
+            do
+            {
+                Console.WriteLine("¿DESEA SALIR DEL PROGRAMA? (si o no)");
+                salir = Console.ReadLine().ToLower();
+                if (salir == "si")
+                {
+                    return;
+                }
+                else if (salir != "si" & salir != "no")
+                {
+                    Console.WriteLine("Ingrese un valor valido (si/no)");
+                    Console.ReadKey();
+                    Console.Clear();
+                }
+                else
+                {
+                    MenuPrincipal(roles,contraseñas,productos,cantidadProd,precioProd,archivoInventario,presupuesto);
+                }
+            } while (salir != "si" & salir != "no");
         }
     }
 }
