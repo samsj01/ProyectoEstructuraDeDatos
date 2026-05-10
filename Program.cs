@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace trabajo
 {
@@ -26,7 +27,7 @@ namespace trabajo
             MenuPrincipal(roles, contraseñas, productos, cantidadProd, precioProd, archivoInventario, presupuesto);
 
         }
-
+        //----------------------------------------------------------------------------------------
         static void MenuPrincipal(string[] roles, string[] contraseñas, List<string> productos, List<int> cantidadProd,
             List<double> precioProd, string archivoInventario, Stack<double> presupuesto)
         {
@@ -34,8 +35,6 @@ namespace trabajo
             bool accesoConcedido = false;
             while (!accesoConcedido)
             {
-                
-                
                 Console.Clear();
                 Console.WriteLine("BIENVENIDO AL MINI MERCADO");
                 Console.Write("Usuario: ");
@@ -86,7 +85,7 @@ namespace trabajo
 
 
         }
-
+        //----------------------------------------------------------------------------------------
         static void MenuAdministrador(string[] roles, string[] contraseñas, List<string> productos, List<int> cantidadProd,
             List<double> precioProd, string archivoInventario, Stack<double> presupuesto)
         {
@@ -123,7 +122,7 @@ namespace trabajo
             }
             
         }
-
+        //----------------------------------------------------------------------------------------
         static void MenuProveedor(string[] roles, string[] contraseñas, List<string> productos, List<int> cantidadProd,
             List<double> precioProd, string archivoInventario, Stack<double> presupuesto)
         {
@@ -155,7 +154,7 @@ namespace trabajo
 
         }
 
-
+        //----------------------------------------------------------------------------------------
         static void MenuCaja(string[] roles, string[] contraseñas, List<string> productos, List<int> cantidadProd, List<double> precioProd, string archivoInventario, Stack<double> presupuesto)
         {
             bool volver = false;
@@ -180,7 +179,7 @@ namespace trabajo
                 }
                 else if (op == "3")
                 {
-                    volver = true; // Rompe el bucle y vuelve al Login
+                    volver = true; 
                     Salir(roles, contraseñas, productos, cantidadProd, precioProd, archivoInventario, presupuesto);
                 }
             }
@@ -226,7 +225,7 @@ namespace trabajo
             }
             return contraseñasGuardadas;
         }
-
+        //----------------------------------------------------------------------------------------
         static void CompraProducto(List<string> productos, List<int> cantidadProd, List<double> precioProd, string archivoInventario, Stack<double> presupuesto)
         {
             double precio, compraTotal = 0, saldoActual = presupuesto.Peek();
@@ -303,7 +302,7 @@ namespace trabajo
             Console.Clear();
             return;
         }
-
+        //----------------------------------------------------------------------------------------
         static void Inventario(List<string> productos, List<int> cantidadProd, List<double> precioProd, Stack<double> presupuesto)
         {
             Console.Clear();
@@ -324,7 +323,7 @@ namespace trabajo
             Console.Clear();
             return;
         }
-
+        //----------------------------------------------------------------------------------------
         static void VenderProductos(List<string> productos, List<int> cantidadProd, List<double> precioProd, string archivoInventario, Stack<double> presupuesto)
         {
             string continuar = "";
@@ -375,6 +374,7 @@ namespace trabajo
 
         }
 
+        // ============ FUNCIONES AUXILIARES ============
         static void GuardarInventario(List<string> producto, List<double> precio, List<int> cantidad, string archivoInventario)
         {
             List<string> lineas = new List<string> ();
@@ -385,7 +385,7 @@ namespace trabajo
             }
             File.WriteAllLines(archivoInventario, lineas);
         }
-
+        //----------------------------------------------------------------------------------------
         static void RecargarProductos(List<string> producto, List<double> precio, List<int> cantidad, string archivoInventario)
         {
             if (!File.Exists(archivoInventario))
@@ -399,7 +399,7 @@ namespace trabajo
                 producto.Add(ProduDatos[0]); precio.Add(double.Parse(ProduDatos[1])); cantidad.Add(int.Parse(ProduDatos[2]));
             }
         }
-
+        //----------------------------------------------------------------------------------------
         static string LeerPassword()
         {
             string pass = ""; ConsoleKeyInfo key;
@@ -417,24 +417,24 @@ namespace trabajo
             } while (key.Key != ConsoleKey.Enter);
             Console.WriteLine(); return pass;
         }
-
+        //----------------------------------------------------------------------------------------
         static void CargarPresupuesto(Stack<double> pila)
         {
             string archivoCostos = "costos_e_ingresos.csv";
-            if (!File.Exists(archivoCostos)) 
+            if (!File.Exists(archivoCostos))
             {
                 File.AppendAllText("costos_e_ingresos.csv", "Tipo;Monto;Saldo Nuevo" + Environment.NewLine);
-                pila.Push(800000); 
-                return; 
+                pila.Push(800000);
+                return;
             }
             string[] lineas = File.ReadAllLines(archivoCostos);
-            foreach (string linea in lineas)
+            for (int i = 1; i<lineas.Length; i++)
             {
-                string[] datos = linea.Split(';');
+                string[] datos = lineas[i].Split(';');
                 pila.Push(double.Parse(datos[2]));
             }
         }
-
+        //----------------------------------------------------------------------------------------
         static void RegistrarMovimiento(Stack<double> pila, string tipo, double monto)
         {
             double saldoActual = pila.Peek();
@@ -450,7 +450,7 @@ namespace trabajo
             pila.Push(nuevoSaldo);
             File.AppendAllText("costos_e_ingresos.csv", $"{tipo};{monto};{nuevoSaldo}" + Environment.NewLine);
         }
-
+        //----------------------------------------------------------------------------------------
         static string[] InicializarUsuarios()
         {
             string archivoUsuarios = "usuarios.txt";
@@ -462,7 +462,7 @@ namespace trabajo
             File.WriteAllLines(archivoUsuarios, contraseñas);
             return contraseñas;
         }
-
+        //----------------------------------------------------------------------------------------
         static void Salir(string[] roles, string[] contraseñas, List<string> productos, List<int> cantidadProd,
             List<double> precioProd, string archivoInventario, Stack<double> presupuesto)
         {
