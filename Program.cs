@@ -253,7 +253,7 @@ namespace trabajo
                         precio = precioProd[indice];
                         for (int i = 0; i < cantidad; i++) { compraTotal += precio; }
 
-                        if (compraTotal >= saldoActual)
+                        if (compraTotal >= saldoProvicional)
                         {
                             Console.WriteLine("El valor de la compra es igual o sobrepasa el presupuesto...");
                             compraTotal = 0; Console.ReadKey(); continue;
@@ -275,7 +275,7 @@ namespace trabajo
                         cantidad = int.Parse(Console.ReadLine());
                         for (int i = 0; i < cantidad; i++) { compraTotal += precio; }
 
-                        if (compraTotal >= saldoActual)
+                        if (compraTotal >= saldoProvicional)
                         {
                             Console.WriteLine("El valor de la compra sobrepasa el presupuesto...");
                             compraTotal = 0; Console.ReadKey(); continue;
@@ -354,9 +354,10 @@ namespace trabajo
                 {
                     Console.WriteLine($"Producto: {productos[indice]} | Stock: {cantidadProd[indice]}");
                     Console.Write("Unidades a vender: ");
-                    if (int.TryParse(Console.ReadLine(), out int cantVenta) && cantVenta <= cantidadProd[indice] && cantVenta > 0)
+                    if (int.TryParse(Console.ReadLine(), out int cantVenta) && 
+                        cantVenta <= cantidadProd[indice] && cantVenta > 0)
                     {
-                        double totalVenta = cantVenta * precioProd[indice] / 0.8;
+                        double totalVenta = cantVenta * (precioProd[indice] / 0.8);
                         cantidadProd[indice] -= cantVenta;
                         RegistrarMovimiento(presupuesto, "Ingreso", totalVenta);
                         GuardarInventario(productos, precioProd, cantidadProd, archivoInventario);
@@ -376,8 +377,12 @@ namespace trabajo
 
         static void GuardarInventario(List<string> producto, List<double> precio, List<int> cantidad, string archivoInventario)
         {
-            List<string> lineas = new List<string> { "Producto;Precio;Cantidad" };
-            for (int i = 0; i < producto.Count; i++) { lineas.Add($"{producto[i]};{precio[i]};{cantidad[i]}"); }
+            List<string> lineas = new List<string> ();
+            lineas.Add("Producto;Precio Compra;Precio Caja;Cantidad");
+            for (int i = 0; i < producto.Count; i++) 
+            { 
+                lineas.Add($"{producto[i]};{precio[i]};{precio[i]/0.8};{cantidad[i]}"); 
+            }
             File.WriteAllLines(archivoInventario, lineas);
         }
 
@@ -417,7 +422,8 @@ namespace trabajo
         {
             string archivoCostos = "costos_e_ingresos.csv";
             if (!File.Exists(archivoCostos)) 
-            { 
+            {
+                File.AppendAllText("costos_e_ingresos.csv", "Tipo;Monto;Saldo Nuevo" + Environment.NewLine);
                 pila.Push(800000); 
                 return; 
             }
@@ -432,7 +438,15 @@ namespace trabajo
         static void RegistrarMovimiento(Stack<double> pila, string tipo, double monto)
         {
             double saldoActual = pila.Peek();
-            double nuevoSaldo = (tipo == "Ingreso") ? saldoActual + monto : saldoActual - monto;
+            double nuevoSaldo;
+            if (tipo == "Ingreso")
+            {
+                nuevoSaldo = saldoActual + monto;
+            }
+            else
+            {
+                nuevoSaldo = saldoActual - monto;
+            }
             pila.Push(nuevoSaldo);
             File.AppendAllText("costos_e_ingresos.csv", $"{tipo};{monto};{nuevoSaldo}" + Environment.NewLine);
         }
