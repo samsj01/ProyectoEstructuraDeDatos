@@ -110,8 +110,8 @@ namespace trabajo
             {
                 Console.WriteLine(" MENÚ ADMINISTRADOR");
                 Console.WriteLine("1. Ver Inventario");
-                Console.WriteLine("2. Comprar Productos (Gestionar)");
-                Console.WriteLine("3. Realizar Venta (Salida)");
+                Console.WriteLine("2. Comprar Productos");
+                Console.WriteLine("3. Realizar Venta ");
                 Console.WriteLine("4. Salir");
                 Console.Write("Opción: ");
                 string op = Console.ReadLine();
@@ -146,7 +146,7 @@ namespace trabajo
             while (!volver)
             {
                 Console.WriteLine(" MENÚ PROVEEDOR / ALMACÉN");
-                Console.WriteLine("1. Ver Inventario (Pedidos)");
+                Console.WriteLine("1. Ver Inventario ");
                 Console.WriteLine("2. Cargar Stock de Productos");
                 Console.WriteLine("3. Salir");
                 Console.Write("Opción: ");
@@ -255,7 +255,7 @@ namespace trabajo
                 {
                     Console.Clear();
                     Console.WriteLine("=== COMPRA DE PRODUCTOS ===");
-                    Console.WriteLine("SAlDO ACTUAL: " + saldoActual);
+                    Console.WriteLine("SAlDO ACTUAL: " + saldoProvicional);
 
                     Console.Write("\nIngrese el producto: ");
                     producto = Console.ReadLine().ToLower();
@@ -348,7 +348,7 @@ namespace trabajo
             {
                 Console.Clear();
                 Console.WriteLine("========== Venta de productos ========");
-                Console.WriteLine("\n[!] ERROR: No es posible realizar ventas.");
+                Console.WriteLine("\nERROR: No es posible realizar ventas.");
                 Console.WriteLine("No se pueden realizar ventas, el inventario esta vacío.");
                 Console.WriteLine("\nPresione cualquier tecla para regresar...");
                 Console.ReadKey();
@@ -384,6 +384,7 @@ namespace trabajo
                 Console.Write("\n¿Desea registrar otro producto? (si/no): ");
                 continuar = Console.ReadLine().ToLower();
             } while (continuar == "si" || continuar == "s");
+            Console.Clear();
             return;
 
         }
@@ -432,7 +433,7 @@ namespace trabajo
             string archivoCostos = "costos_e_ingresos.csv";
             if (!File.Exists(archivoCostos)) 
             { 
-                pila.Push(100000); 
+                pila.Push(800000); 
                 return; 
             }
             string[] lineas = File.ReadAllLines(archivoCostos);
