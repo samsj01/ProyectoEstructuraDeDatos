@@ -341,10 +341,10 @@ namespace trabajo
                 Console.SetCursorPosition(x, y);
                 Console.Write($"--- PRODUCTO {i + 1} ---");
                 Console.SetCursorPosition(x, y + 1);
-               
+
                 Console.Write($"Nombre: {productos[i].ToUpper()}");
                 Console.SetCursorPosition(x, y + 2);
-                if (cantidadProd[i]<=5)
+                if (cantidadProd[i] <= 5)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.Write($"Stock: {cantidadProd[i]}");
@@ -374,18 +374,20 @@ namespace trabajo
             {
                 Console.Clear();
                 Console.WriteLine("========== Venta de productos ========");
-                Console.WriteLine("\nERROR: No es posible realizar ventas.");
-                Console.WriteLine("No se pueden realizar ventas, el inventario está vacío.");
-                Console.WriteLine("\nPresione cualquier tecla para regresar...");
+                Console.WriteLine("\nERROR: No es posible realizar ventas. Inventario vacío.");
                 Console.ReadKey();
                 return;
             }
 
+            // Listas temporales para el "Carrito de Compras"
+            List<string> carritoNombres = new List<string>();
+            List<int> carritoCantidades = new List<int>();
+            List<double> carritoPreciosUnitarios = new List<double>();
+
             string continuar = "";
-            double totalVentaGeneral = 0; // Acumulador para el total de la sesión
 
             Console.Clear();
-            Console.WriteLine("========== Venta de productos ========");
+            Console.WriteLine("========== REGISTRO DE VENTA ========");
 
             do
             {
@@ -395,9 +397,7 @@ namespace trabajo
 
                 if (indice != -1)
                 {
-                    // Mostramos info del producto
                     double precioVentaUnitario = precioProd[indice] / 0.8;
-                    
                     if (cantidadProd[indice] <= 5)
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
@@ -416,61 +416,113 @@ namespace trabajo
                     {
                         if (cantVenta <= cantidadProd[indice])
                         {
-                            double subtotal = cantVenta * precioVentaUnitario;
+                            // 1. Agregamos al carrito temporal
+                            carritoNombres.Add(productos[indice]);
+                            carritoCantidades.Add(cantVenta);
+                            carritoPreciosUnitarios.Add(precioVentaUnitario);
 
-                            // Actualización de datos
+                            // 2. Descontamos del inventario real inmediatamente
                             cantidadProd[indice] -= cantVenta;
-                            totalVentaGeneral += subtotal; // Sumamos al total de la sesión
 
+                            // 3. Registramos el movimiento financiero y guardamos archivo
+                            double subtotal = cantVenta * precioVentaUnitario;
                             RegistrarMovimiento(presupuesto, "Ingreso", subtotal);
                             GuardarInventario(productos, precioProd, cantidadProd, archivoInventario);
 
+                            Console.WriteLine($">> OK: {productos[indice].ToUpper()} añadido al carrito.");
                             Console.WriteLine($">> Agregado: {cantVenta} x {productos[indice]} = {subtotal:C}");
-
                         }
                         else
                         {
                             Console.WriteLine("   ERROR: Stock insuficiente.");
                         }
                     }
-                    else
-                    {
-                        Console.WriteLine("   ERROR: Cantidad no válida.");
-                    }
                 }
                 else
                 {
-                    Console.WriteLine("   ERROR: El producto no existe en el inventario.");
+                    Console.WriteLine("   ERROR: El producto no existe.");
                 }
 
-
-                // ... (dentro del método VenderProductos, al final del ciclo do)
-
+                // Validación de continuación
                 while (true)
                 {
-                    Console.Write("\n¿Desea registrar otro producto? (si/no): ");
-                    continuar = Console.ReadLine().ToUpper(); // Convertimos a mayúsculas para facilitar la comparación
-
-                    if (continuar == "SI" || continuar == "S" || continuar == "NO" || continuar == "N")
-                    {
-                        break; // Salimos del bucle de validación porque la respuesta es correcta
-                    }
-                    else
-                    {
-                        Console.WriteLine("Respuesta no válida. Por favor, ingrese 'SI' o 'NO'.");
-                    }
+                    Console.Write("\n¿Desea agregar otro producto al carrito? (si/no): ");
+                    continuar = Console.ReadLine().ToLower();
+                    if (continuar == "si" || continuar == "s" || continuar == "no" || continuar == "n") break;
+                    Console.WriteLine("Respuesta no válida.");
                 }
 
-            } while (continuar == "SI" || continuar == "S" || continuar=="si" || continuar == "s");
+            } while (continuar == "si" || continuar == "s");
 
-            // Al salir del bucle principal, mostramos el total
-            Console.WriteLine("\n======================================");
-            Console.WriteLine($" TOTAL A PAGAR: {totalVentaGeneral:C}");
-            Console.WriteLine("======================================");
+            // AL FINALIZAR EL BUCLE: Si hay algo en el carrito, generamos la factura única
+            if (carritoNombres.Count > 0)
+            {
+                GenerarFacturaFinal(carritoNombres, carritoCantidades, carritoPreciosUnitarios);
+            }
+        }
+        static void FacturaVenta(List<string> productos, List<double> precioProd, string buscarProd, int cantVenta)
+        {
+            Console.Clear();
+            int indice = productos.IndexOf(buscarProd);
+
+            if (indice != -1)
+            {
+                // Calculamos el precio de venta (con el margen del 20%) y el total
+                double precioVentaUnitario = precioProd[indice] / 0.8;
+                double totalVenta = cantVenta * precioVentaUnitario;
+
+                Console.WriteLine("========== FACTURA DE VENTA ========");
+                Console.WriteLine("------------------------------------");
+
+                // Alineación manual con espacios para que coincida con las columnas
+                Console.WriteLine("PRODUCTO        CANT.      PRECIO U.");
+
+                // Usamos .ToUpper() directamente aquí para el nombre
+                // El formato :C aplica moneda y :F2 asegura 2 decimales
+                Console.WriteLine($"{productos[indice].ToUpper(),-15} {cantVenta,-10} {precioVentaUnitario,10:C}");
+
+                Console.WriteLine("------------------------------------");
+                Console.WriteLine($"TOTAL A PAGAR:            {totalVenta,10:C}");
+                Console.WriteLine("====================================");
+            }
+            else
+            {
+                Console.WriteLine("Error: Producto no encontrado para facturar.");
+            }
+
+            Console.WriteLine("\nPresione cualquier tecla para volver...");
+            Console.ReadKey();
+            Console.Clear();
+        }
+
+        static void GenerarFacturaFinal(List<string> nombres, List<int> cantidades, List<double> precios)
+        {
+            Console.Clear();
+            double totalFinal = 0;
+
+            Console.WriteLine("============================================");
+            Console.WriteLine("             FACTURA DE VENTA               ");
+            Console.WriteLine("============================================");
+            Console.WriteLine("{0,-20} {1,-7} {2,-12}", "PRODUCTO", "CANT.", "SUBTOTAL");
+            Console.WriteLine("--------------------------------------------");
+
+            for (int i = 0; i < nombres.Count; i++)
+            {
+                double subtotal = cantidades[i] * precios[i];
+                totalFinal += subtotal;
+
+                // Imprimimos cada línea del carrito
+                // Usamos ToUpper() para que el nombre salga en mayúsculas
+                Console.WriteLine("{0,-20} {1,-7} {2,-12:C}", nombres[i].ToUpper(), cantidades[i], subtotal);
+            }
+
+            Console.WriteLine("--------------------------------------------");
+            Console.WriteLine($"TOTAL A PAGAR:                {totalFinal,12:C}");
+            Console.WriteLine("============================================");
+            Console.WriteLine("\n¡Gracias por su compra!");
             Console.WriteLine("\nPresione cualquier tecla para finalizar...");
             Console.ReadKey();
-
-           
+            Console.Clear();
         }
 
 
