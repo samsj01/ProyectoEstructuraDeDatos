@@ -91,11 +91,15 @@ namespace trabajo
             bool volver = false;
             while (!volver)
             {
-                Console.WriteLine(" MENÚ ADMINISTRADOR");
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine(" === MENÚ DE ADMINISTRADOR === ");
+                Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine("1. Ver Inventario");
                 Console.WriteLine("2. Comprar Productos");
                 Console.WriteLine("3. Realizar Venta ");
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("4. Salir");
+                Console.ForegroundColor = ConsoleColor.White;
                 Console.Write("Opción: ");
                 string op = Console.ReadLine();
 
@@ -128,10 +132,14 @@ namespace trabajo
             bool volver = false;
             while (!volver)
             {
-                Console.WriteLine(" MENÚ PROVEEDOR / ALMACÉN");
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine(" === MENÚ DE ALMACÉN === ");
+                Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine("1. Ver Inventario ");
                 Console.WriteLine("2. Cargar Stock de Productos");
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("3. Salir");
+                Console.ForegroundColor = ConsoleColor.White;
                 Console.Write("Opción: ");
                 string op = Console.ReadLine();
 
@@ -160,10 +168,14 @@ namespace trabajo
             while (!volver) // --- Este bucle mantiene el menú vivo
             {
                 Console.Clear();
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine(" === MENÚ DE CAJA === ");
+                Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine("1. Realizar Venta");
                 Console.WriteLine("2. Consultar Inventario");
-                Console.WriteLine("3. Cerrar Sesión");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("3. Salir");
+                Console.ForegroundColor = ConsoleColor.White;
                 Console.Write("Opción: ");
                 string op = Console.ReadLine();
 
@@ -239,7 +251,7 @@ namespace trabajo
                 {
                     Console.Clear();
                     Console.WriteLine("=== COMPRA DE PRODUCTOS ===");
-                    Console.WriteLine("SAlDO ACTUAL: " + saldoProvicional);
+                    Console.WriteLine($"SAlDO ACTUAL: {saldoProvicional:C}");
 
                     Console.Write("\nIngrese el producto: ");
                     producto = Console.ReadLine().ToLower();
@@ -268,7 +280,7 @@ namespace trabajo
                             tipo = "Gasto";
                             saldoProvicional -= compraTotal;
                         }
-                        Console.WriteLine("SALDO ACTUAL: " + saldoProvicional);
+                        Console.WriteLine($"SAlDO ACTUAL: {saldoProvicional:C}");
                         cantidadProd[indice] += cantidad;
                     }
                     else
@@ -296,7 +308,7 @@ namespace trabajo
                             saldoProvicional -= compraTotal;
                             tipo = "Gasto";
                         }
-                        Console.WriteLine("SALDO ACTUAL: " + saldoProvicional);
+                        Console.WriteLine($"SAlDO ACTUAL: {saldoProvicional:C}");
                         productos.Add(producto);
                         precioProd.Add(precio);
                         cantidadProd.Add(cantidad);
@@ -454,45 +466,10 @@ namespace trabajo
 
             } while (continuar == "si" || continuar == "s");
 
-            // AL FINALIZAR EL BUCLE: Si hay algo en el carrito, generamos la factura única
             if (carritoNombres.Count > 0)
             {
                 GenerarFacturaFinal(carritoNombres, carritoCantidades, carritoPreciosUnitarios);
             }
-        }
-        static void FacturaVenta(List<string> productos, List<double> precioProd, string buscarProd, int cantVenta)
-        {
-            Console.Clear();
-            int indice = productos.IndexOf(buscarProd);
-
-            if (indice != -1)
-            {
-                // Calculamos el precio de venta (con el margen del 20%) y el total
-                double precioVentaUnitario = precioProd[indice] / 0.8;
-                double totalVenta = cantVenta * precioVentaUnitario;
-
-                Console.WriteLine("========== FACTURA DE VENTA ========");
-                Console.WriteLine("------------------------------------");
-
-                // Alineación manual con espacios para que coincida con las columnas
-                Console.WriteLine("PRODUCTO        CANT.      PRECIO U.");
-
-                // Usamos .ToUpper() directamente aquí para el nombre
-                // El formato :C aplica moneda y :F2 asegura 2 decimales
-                Console.WriteLine($"{productos[indice].ToUpper(),-15} {cantVenta,-10} {precioVentaUnitario,10:C}");
-
-                Console.WriteLine("------------------------------------");
-                Console.WriteLine($"TOTAL A PAGAR:            {totalVenta,10:C}");
-                Console.WriteLine("====================================");
-            }
-            else
-            {
-                Console.WriteLine("Error: Producto no encontrado para facturar.");
-            }
-
-            Console.WriteLine("\nPresione cualquier tecla para volver...");
-            Console.ReadKey();
-            Console.Clear();
         }
 
         static void GenerarFacturaFinal(List<string> nombres, List<int> cantidades, List<double> precios)
