@@ -396,7 +396,9 @@ namespace trabajo
             for (int i = 1; i < lineas.Length; i++)
             {
                 string[] ProduDatos = lineas[i].Split(';');
-                producto.Add(ProduDatos[0]); precio.Add(double.Parse(ProduDatos[1])); cantidad.Add(int.Parse(ProduDatos[2]));
+                producto.Add(ProduDatos[0]);
+                precio.Add(double.Parse(ProduDatos[1]));
+                cantidad.Add(int.Parse(ProduDatos[3]));
             }
         }
         //----------------------------------------------------------------------------------------
@@ -421,18 +423,27 @@ namespace trabajo
         static void CargarPresupuesto(Stack<double> pila)
         {
             string archivoCostos = "costos_e_ingresos.csv";
-            if (!File.Exists(archivoCostos))
+
+            if (File.Exists(archivoCostos))
             {
-                File.AppendAllText("costos_e_ingresos.csv", "Tipo;Monto;Saldo Nuevo" + Environment.NewLine);
+                string[] lineas = File.ReadAllLines(archivoCostos);
+                for (int i = 1; i < lineas.Length; i++)
+                {
+                    string[] datos = lineas[i].Split(';');
+                    if (datos.Length >= 3 && double.TryParse(datos[2], out double saldo))
+                    {
+                        pila.Push(saldo);
+                    }
+                }
+            }
+            else
+            {
+                File.AppendAllText(archivoCostos, "Tipo;Monto;Saldo Nuevo" + Environment.NewLine);
+            }
+
+            // Si la pila sigue vacía (archivo no existía o no tenía datos), valor inicial
+            if (pila.Count == 0)
                 pila.Push(800000);
-                return;
-            }
-            string[] lineas = File.ReadAllLines(archivoCostos);
-            for (int i = 1; i<lineas.Length; i++)
-            {
-                string[] datos = lineas[i].Split(';');
-                pila.Push(double.Parse(datos[2]));
-            }
         }
         //----------------------------------------------------------------------------------------
         static void RegistrarMovimiento(Stack<double> pila, string tipo, double monto)
