@@ -119,7 +119,7 @@ namespace trabajo
                     Salir(roles, contraseñas, productos, cantidadProd, precioProd, archivoInventario, presupuesto);
                 }
             }
-            
+
         }
         //----------------------------------------------------------------------------------------
         static void MenuProveedor(string[] roles, string[] contraseñas, List<string> productos, List<int> cantidadProd,
@@ -149,7 +149,7 @@ namespace trabajo
                     Salir(roles, contraseñas, productos, cantidadProd, precioProd, archivoInventario, presupuesto);
                 }
             }
-            
+
 
         }
 
@@ -178,7 +178,7 @@ namespace trabajo
                 }
                 else if (op == "3")
                 {
-                    volver = true; 
+                    volver = true;
                     Salir(roles, contraseñas, productos, cantidadProd, precioProd, archivoInventario, presupuesto);
                 }
             }
@@ -225,7 +225,7 @@ namespace trabajo
             return contraseñasGuardadas;
         }
         //----------------------------------------------------------------------------------------
-        static void CompraProducto(List<string> productos, List<int> cantidadProd, 
+        static void CompraProducto(List<string> productos, List<int> cantidadProd,
             List<double> precioProd, string archivoInventario, Stack<double> presupuesto)
         {
             double precio, compraTotal = 0, saldoActual = presupuesto.Peek();
@@ -250,22 +250,22 @@ namespace trabajo
                         Console.Write("\nIngrese la cantidad de unidades que desee agregar: ");
                         cantidad = int.Parse(Console.ReadLine());
                         precio = precioProd[indice];
-                        for (int i = 0; i < cantidad; i++) 
-                        { 
-                            compraTotal += precio; 
+                        for (int i = 0; i < cantidad; i++)
+                        {
+                            compraTotal += precio;
                         }
 
                         if (compraTotal >= saldoProvicional)
                         {
                             Console.WriteLine("El valor de la compra es igual o sobrepasa el presupuesto...");
-                            compraTotal = 0; 
-                            Console.ReadKey(); 
+                            compraTotal = 0;
+                            Console.ReadKey();
                             continue;
                         }
                         else
                         {
                             Console.WriteLine("\nla Compra ha sido exitosa.");
-                            tipo = "Gasto"; 
+                            tipo = "Gasto";
                             saldoProvicional -= compraTotal;
                         }
                         Console.WriteLine("SALDO ACTUAL: " + saldoProvicional);
@@ -278,32 +278,33 @@ namespace trabajo
                         precio = double.Parse(Console.ReadLine());
                         Console.Write("\nIngrese la cantidad de unidades que desee comprar: ");
                         cantidad = int.Parse(Console.ReadLine());
-                        for (int i = 0; i < cantidad; i++) 
-                        { 
-                            compraTotal += precio; 
+                        for (int i = 0; i < cantidad; i++)
+                        {
+                            compraTotal += precio;
                         }
 
                         if (compraTotal >= saldoProvicional)
                         {
                             Console.WriteLine("El valor de la compra sobrepasa el presupuesto...");
-                            compraTotal = 0; 
-                            Console.ReadKey(); 
+                            compraTotal = 0;
+                            Console.ReadKey();
                             continue;
                         }
                         else
                         {
                             Console.WriteLine("\nla Compra ha sido exitosa.");
-                            saldoProvicional -= compraTotal; 
+                            saldoProvicional -= compraTotal;
                             tipo = "Gasto";
                         }
                         Console.WriteLine("SALDO ACTUAL: " + saldoProvicional);
-                        productos.Add(producto); 
-                        precioProd.Add(precio); 
+                        productos.Add(producto);
+                        precioProd.Add(precio);
                         cantidadProd.Add(cantidad);
                     }
 
                     GuardarInventario(productos, precioProd, cantidadProd, archivoInventario);
                     RegistrarMovimiento(presupuesto, tipo, compraTotal);
+                    compraTotal = 0;
 
                     do
                     {
@@ -340,9 +341,20 @@ namespace trabajo
                 Console.SetCursorPosition(x, y);
                 Console.Write($"--- PRODUCTO {i + 1} ---");
                 Console.SetCursorPosition(x, y + 1);
+               
                 Console.Write($"Nombre: {productos[i].ToUpper()}");
                 Console.SetCursorPosition(x, y + 2);
-                Console.Write($"Stock: {cantidadProd[i]}");
+                if (cantidadProd[i]<=5)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Write($"Stock: {cantidadProd[i]}");
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.Write($"Stock: {cantidadProd[i]}");
+                }
+                Console.ForegroundColor = ConsoleColor.White;
                 Console.SetCursorPosition(x, y + 3);
                 Console.Write($"Precio: {precioProd[i] / 0.8:F2}");
             }
@@ -383,8 +395,9 @@ namespace trabajo
                 if (indice != -1)
                 {
                     Console.WriteLine($"Producto: {productos[indice]} | Stock: {cantidadProd[indice]}");
+                    Console.WriteLine($"Precio producto unidad: {precioProd[indice] / 0.8 :C}");
                     Console.Write("Unidades a vender: ");
-                    if (int.TryParse(Console.ReadLine(), out int cantVenta) && 
+                    if (int.TryParse(Console.ReadLine(), out int cantVenta) &&
                         cantVenta <= cantidadProd[indice] && cantVenta > 0)
                     {
                         double totalVenta = cantVenta * (precioProd[indice] / 0.8);
@@ -393,26 +406,34 @@ namespace trabajo
                         GuardarInventario(productos, precioProd, cantidadProd, archivoInventario);
                         Console.WriteLine($"\nVenta exitosa. Total: {totalVenta:C}");
                     }
-                    else { Console.WriteLine("Cantidad no válida."); }
+                    else 
+                    {
+                        Console.WriteLine("Cantidad no válida.");
+                        Console.Clear();
+                    }
                 }
-                else { Console.WriteLine("El producto no existe."); }
+                else 
+                { 
+                    Console.WriteLine("El producto no existe.");
+                    Console.Clear();
+                }
 
                 Console.Write("\n¿Desea registrar otro producto? (si/no): ");
                 continuar = Console.ReadLine().ToLower();
             } while (continuar == "si" || continuar == "s");
-            Console.Clear();
-            return;
+            
+           return;
 
         }
 
         // ============ FUNCIONES AUXILIARES ============
         static void GuardarInventario(List<string> producto, List<double> precio, List<int> cantidad, string archivoInventario)
         {
-            List<string> lineas = new List<string> ();
+            List<string> lineas = new List<string>();
             lineas.Add("Producto;Precio Compra;Precio Caja;Cantidad");
-            for (int i = 0; i < producto.Count; i++) 
-            { 
-                lineas.Add($"{producto[i]};{precio[i]};{precio[i]/0.8};{cantidad[i]}"); 
+            for (int i = 0; i < producto.Count; i++)
+            {
+                lineas.Add($"{producto[i]};{precio[i]};{precio[i] / 0.8};{cantidad[i]}");
             }
             File.WriteAllLines(archivoInventario, lineas);
         }
@@ -435,7 +456,7 @@ namespace trabajo
         //----------------------------------------------------------------------------------------
         static string LeerPassword()
         {
-            string pass = ""; 
+            string pass = "";
             ConsoleKeyInfo key;
             do
             {
@@ -443,17 +464,17 @@ namespace trabajo
                 //Borra el caracter
                 if (key.Key == ConsoleKey.Backspace && pass.Length > 0)
                 {
-                    pass = pass.Substring(0, (pass.Length - 1)); 
+                    pass = pass.Substring(0, (pass.Length - 1));
                     Console.Write("\b \b");
                 }
                 //solo permite ingresar caracteres
                 else if (key.Key != ConsoleKey.Enter && !char.IsControl(key.KeyChar))
                 {
-                    pass += key.KeyChar; 
+                    pass += key.KeyChar;
                     Console.Write("*");//
                 }
             } while (key.Key != ConsoleKey.Enter);
-            Console.WriteLine(); 
+            Console.WriteLine();
             return pass;
         }
         //----------------------------------------------------------------------------------------
@@ -533,7 +554,7 @@ namespace trabajo
                 }
                 else
                 {
-                    MenuPrincipal(roles,contraseñas,productos,cantidadProd,precioProd,archivoInventario,presupuesto);
+                    MenuPrincipal(roles, contraseñas, productos, cantidadProd, precioProd, archivoInventario, presupuesto);
                 }
             } while (salir != "si" & salir != "no");
         }
