@@ -367,64 +367,112 @@ namespace trabajo
             Console.Clear();
         }
         //----------------------------------------------------------------------------------------
+
         static void VenderProductos(List<string> productos, List<int> cantidadProd, List<double> precioProd, string archivoInventario, Stack<double> presupuesto)
         {
-            string continuar = "";
             if (productos.Count == 0)
-
             {
                 Console.Clear();
                 Console.WriteLine("========== Venta de productos ========");
                 Console.WriteLine("\nERROR: No es posible realizar ventas.");
-                Console.WriteLine("No se pueden realizar ventas, el inventario esta vacío.");
+                Console.WriteLine("No se pueden realizar ventas, el inventario está vacío.");
                 Console.WriteLine("\nPresione cualquier tecla para regresar...");
                 Console.ReadKey();
-                return; //Regresa al menú anterior
+                return;
             }
+
+            string continuar = "";
+            double totalVentaGeneral = 0; // Acumulador para el total de la sesión
+
+            Console.Clear();
+            Console.WriteLine("========== Venta de productos ========");
 
             do
             {
-                double saldoActual = presupuesto.Peek();
-                Console.Clear();
-                Console.WriteLine("========== Venta de productos ========");
-                Console.WriteLine($"Saldo Actual: {saldoActual:C}");
                 Console.Write("\nIngrese el nombre del producto: ");
                 string buscarProd = Console.ReadLine().ToLower();
                 int indice = productos.IndexOf(buscarProd);
 
                 if (indice != -1)
                 {
-                    Console.WriteLine($"Producto: {productos[indice]} | Stock: {cantidadProd[indice]}");
-                    Console.WriteLine($"Precio producto unidad: {precioProd[indice] / 0.8 :C}");
-                    Console.Write("Unidades a vender: ");
-                    if (int.TryParse(Console.ReadLine(), out int cantVenta) &&
-                        cantVenta <= cantidadProd[indice] && cantVenta > 0)
+                    // Mostramos info del producto
+                    double precioVentaUnitario = precioProd[indice] / 0.8;
+                    
+                    if (cantidadProd[indice] <= 5)
                     {
-                        double totalVenta = cantVenta * (precioProd[indice] / 0.8);
-                        cantidadProd[indice] -= cantVenta;
-                        RegistrarMovimiento(presupuesto, "Ingreso", totalVenta);
-                        GuardarInventario(productos, precioProd, cantidadProd, archivoInventario);
-                        Console.WriteLine($"\nVenta exitosa. Total: {totalVenta:C}");
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine($"-> Producto: {productos[indice]} | Stock actual: {cantidadProd[indice]}");
                     }
-                    else 
+                    else
                     {
-                        Console.WriteLine("Cantidad no válida.");
-                        Console.Clear();
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine($"-> Producto: {productos[indice]} | Stock actual: {cantidadProd[indice]}");
+                    }
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine($"-> Precio unidad: {precioVentaUnitario:C}");
+
+                    Console.Write("   Unidades a vender: ");
+                    if (int.TryParse(Console.ReadLine(), out int cantVenta) && cantVenta > 0)
+                    {
+                        if (cantVenta <= cantidadProd[indice])
+                        {
+                            double subtotal = cantVenta * precioVentaUnitario;
+
+                            // Actualización de datos
+                            cantidadProd[indice] -= cantVenta;
+                            totalVentaGeneral += subtotal; // Sumamos al total de la sesión
+
+                            RegistrarMovimiento(presupuesto, "Ingreso", subtotal);
+                            GuardarInventario(productos, precioProd, cantidadProd, archivoInventario);
+
+                            Console.WriteLine($">> Agregado: {cantVenta} x {productos[indice]} = {subtotal:C}");
+
+                        }
+                        else
+                        {
+                            Console.WriteLine("   ERROR: Stock insuficiente.");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("   ERROR: Cantidad no válida.");
                     }
                 }
-                else 
-                { 
-                    Console.WriteLine("El producto no existe.");
-                    Console.Clear();
+                else
+                {
+                    Console.WriteLine("   ERROR: El producto no existe en el inventario.");
                 }
 
-                Console.Write("\n¿Desea registrar otro producto? (si/no): ");
-                continuar = Console.ReadLine().ToLower();
-            } while (continuar == "si" || continuar == "s");
-            
-           return;
 
+                // ... (dentro del método VenderProductos, al final del ciclo do)
+
+                while (true)
+                {
+                    Console.Write("\n¿Desea registrar otro producto? (si/no): ");
+                    continuar = Console.ReadLine().ToUpper(); // Convertimos a mayúsculas para facilitar la comparación
+
+                    if (continuar == "SI" || continuar == "S" || continuar == "NO" || continuar == "N")
+                    {
+                        break; // Salimos del bucle de validación porque la respuesta es correcta
+                    }
+                    else
+                    {
+                        Console.WriteLine("Respuesta no válida. Por favor, ingrese 'SI' o 'NO'.");
+                    }
+                }
+
+            } while (continuar == "SI" || continuar == "S" || continuar=="si" || continuar == "s");
+
+            // Al salir del bucle principal, mostramos el total
+            Console.WriteLine("\n======================================");
+            Console.WriteLine($" TOTAL A PAGAR: {totalVentaGeneral:C}");
+            Console.WriteLine("======================================");
+            Console.WriteLine("\nPresione cualquier tecla para finalizar...");
+            Console.ReadKey();
+
+           
         }
+
 
         // ============ FUNCIONES AUXILIARES ============
         static void GuardarInventario(List<string> producto, List<double> precio, List<int> cantidad, string archivoInventario)
