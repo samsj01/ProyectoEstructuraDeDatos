@@ -122,6 +122,10 @@ namespace trabajo
                     volver = true;
                     Salir(roles, contraseñas, productos, cantidadProd, precioProd, archivoInventario, presupuesto);
                 }
+                else
+                {
+                    Console.Clear();
+                }
             }
 
         }
@@ -155,6 +159,10 @@ namespace trabajo
                 {
                     volver = true;
                     Salir(roles, contraseñas, productos, cantidadProd, precioProd, archivoInventario, presupuesto);
+                }
+                else
+                {
+                    Console.Clear();
                 }
             }
 
@@ -192,6 +200,10 @@ namespace trabajo
                 {
                     volver = true;
                     Salir(roles, contraseñas, productos, cantidadProd, precioProd, archivoInventario, presupuesto);
+                }
+                else
+                {
+                    Console.Clear();
                 }
             }
 
