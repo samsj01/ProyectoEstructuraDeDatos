@@ -536,10 +536,20 @@ namespace trabajo
             string[] lineas = File.ReadAllLines(archivoInventario);
             for (int i = 1; i < lineas.Length; i++)// se empieza desde 1 para ignorar el titulo en el archivo
             {
+
+                if (string.IsNullOrWhiteSpace(lineas[i])) 
+                {
+                    continue;
+                }
+
                 string[] ProduDatos = lineas[i].Split(';');
-                producto.Add(ProduDatos[0]);
-                precio.Add(double.Parse(ProduDatos[1]));
-                cantidad.Add(int.Parse(ProduDatos[3]));
+
+                if (ProduDatos.Length >= 4)
+                {
+                    producto.Add(ProduDatos[0]);
+                    precio.Add(double.Parse(ProduDatos[1]));
+                    cantidad.Add(int.Parse(ProduDatos[3]));
+                }
             }
         }
         //----------------------------------------------------------------------------------------
