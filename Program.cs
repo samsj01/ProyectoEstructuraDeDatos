@@ -6,6 +6,7 @@ internal class Program
 {
     static void Main()
     {
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
         Stack<double> presupuesto = new Stack<double>();
         CargarPresupuesto(presupuesto);
 
@@ -21,10 +22,8 @@ internal class Program
         List<string> contraseñas = new List<string>();
         List<string> roles = new List<string>();
 
-        // Cargamos los usuarios desde el archivo txt
-        CargarUsuarios(usuarios, contraseñas, roles, archivoUsuarios);
 
-        // Arrancamos el programa
+        CargarUsuarios(usuarios, contraseñas, roles, archivoUsuarios);
         MenuPrincipal(usuarios, contraseñas, roles, productos, cantidadProd, precioProd, archivoInventario, presupuesto, archivoUsuarios);
     }
 
@@ -34,16 +33,75 @@ internal class Program
     {
         Console.Clear();
         bool accesoConcedido = false;
+        bool esCorrecto = true;
 
         while (!accesoConcedido)
         {
-            Console.WriteLine("=====================================");
-            Console.WriteLine("      Bienvenidos al MiniMercado    ");
-            Console.WriteLine("=====================================");
-            Console.Write("Usuario: ");
+            int ancho = 40;
+            int alto = 20;
+            int rangex = (Console.WindowWidth / 2) - (ancho / 2);
+            int rangey = (Console.WindowHeight / 2) - (alto / 2);
+            
+
+            for (int x = 1; x < ancho; x++)
+            {
+                Console.SetCursorPosition(rangex + x, rangey);
+                Console.Write("─"); // Línea superior
+
+                Console.SetCursorPosition(rangex + x, rangey + alto);
+                Console.Write("─"); // Línea inferior
+            }
+
+            
+            for (int y = 1; y < alto; y++)
+            {
+                Console.SetCursorPosition(rangex, rangey + y);
+                Console.Write("│"); // Línea izquierda
+
+                Console.SetCursorPosition(rangex + ancho, rangey + y);
+                Console.Write("│"); // Línea derecha
+            }
+
+            Console.SetCursorPosition(rangex, rangey);
+            Console.Write("┌"); // Esquina superior izquierda
+
+            Console.SetCursorPosition(rangex + ancho, rangey);
+            Console.Write("┐"); // Esquina superior derecha
+
+            Console.SetCursorPosition(rangex, rangey + alto);
+            Console.Write("└"); // Esquina inferior izquierda
+
+            Console.SetCursorPosition(rangex + ancho, rangey + alto);
+            Console.Write("┘"); // Esquina inferior derecha
+
+        
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.SetCursorPosition(rangex + 8, rangey + 2);
+            Console.Write("Bienvenidos al MiniMercado");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.SetCursorPosition(rangex + 17, rangey + 5);
+            Console.Write("Usuario");
+            for (int x = 1; x < ancho/2; x++)
+            {
+                Console.SetCursorPosition(rangex + 10 + x, rangey + 8);
+                Console.Write("─"); // Línea usuario
+            }
+            Console.SetCursorPosition(rangex + 15, rangey + 10);
+            Console.Write("Contraseña");
+            for (int x = 1; x < ancho / 2; x++)
+            {
+                Console.SetCursorPosition(rangex + 10 + x, rangey + 13);
+                Console.Write("─"); // Línea contraseña
+            }
+            if (!esCorrecto)
+            {
+                Console.SetCursorPosition(rangex + 10, rangey + 15);
+                Console.Write("Dato(s) incorrecto(s).");
+            }
+            Console.SetCursorPosition(rangex + 11, rangey + 7);
             string usuarioIngresado = Console.ReadLine().Trim();
 
-            Console.Write("Contraseña: ");
+            Console.SetCursorPosition(rangex + 11, rangey + 12);
             string claveIngresada = LeerPassword();
 
             string rolAsignado = "";
@@ -60,8 +118,6 @@ internal class Program
             if (accesoConcedido)
             {
                 Console.Clear();
-                Console.WriteLine($"Bienvenido/a, {usuarioIngresado}. Rol: {rolAsignado}\n");
-
                 if (rolAsignado == "Administrador")
                 {
                     MenuAdministrador(usuarios, contraseñas, roles, productos, cantidadProd, precioProd, archivoInventario, presupuesto, archivoUsuarios);
@@ -77,10 +133,9 @@ internal class Program
             }
             else
             {
-                Console.WriteLine("\n[❌] Error: Usuario o contraseña incorrectos.");
-                Console.WriteLine("Presione cualquier tecla para intentar de nuevo...");
-                Console.ReadKey();
+                esCorrecto = false;
                 Console.Clear();
+                
             }
         }
     }
@@ -90,23 +145,48 @@ internal class Program
                                   List<int> cantidadProd, List<double> precioProd, string archivoInventario, Stack<double> presupuesto, string archivoUsuarios)
     {
         bool volver = false;
+        int ancho = 40;
+        int alto = 20;
+        int rangex = (Console.WindowWidth / 2) - (ancho / 2);
+        int rangey = (Console.WindowHeight / 2) - (alto / 2);
         while (!volver)
         {
             Console.Clear();
+            Console.SetCursorPosition(rangex,rangey);
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine(" === MENÚ DE ADMINISTRADOR === ");
+            Console.Write(" === MENÚ DE ADMINISTRADOR === ");
             Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("1. Ver Inventario");
-            Console.WriteLine("2. Comprar Productos");
-            Console.WriteLine("3. Realizar Venta ");
+
+            Console.SetCursorPosition(rangex, rangey + 1);
+            Console.Write("1. Ver Inventario");
+
+            Console.SetCursorPosition(rangex, rangey + 2);
+            Console.Write("2. Comprar Productos");
+
+            Console.SetCursorPosition(rangex, rangey + 3);
+            Console.Write("3. Realizar Venta ");
+
+            Console.SetCursorPosition(rangex, rangey + 4);
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("4. Crear un usuario nuevo");
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("5. Eliminar un usuario");
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("6. Salir");
+            Console.Write("4. Crear un usuario nuevo");
             Console.ForegroundColor = ConsoleColor.White;
-            Console.Write("Opción: ");
+
+            Console.SetCursorPosition(rangex, rangey + 5);
+            Console.Write("5. Eliminar un usuario");
+            Console.ForegroundColor = ConsoleColor.Red;
+
+            Console.SetCursorPosition(rangex, rangey + 6);
+            Console.Write("6. Salir");
+            Console.ForegroundColor = ConsoleColor.White;
+
+            Console.SetCursorPosition(rangex + 10, rangey + 8);
+            Console.Write("Opción");
+            for (int x = 0; x < 16; x++)
+            {
+                Console.SetCursorPosition(rangex + 5 + x, rangey + 10);
+                Console.Write("─"); // Línea opcion
+            }
+            Console.SetCursorPosition(rangex + 5, rangey + 9);
             string op = Console.ReadLine();
 
             if (op == "1")
@@ -220,45 +300,6 @@ internal class Program
     }
 
     // ============ FUNCIONES PRINCIPALES ===============
-
-    static string[] RegistroUser()
-    {
-        string[] predeterminados = { "Administrador", "Almacen", "Caja" };
-        string[] contraseñasGuardadas = new string[predeterminados.Length];
-
-        for (int i = 0; i < predeterminados.Length; i++)
-        {
-            string ingreso1 = "";
-            string ingreso2 = "";
-            bool coinciden = false;
-
-            while (!coinciden)
-            {
-                Console.WriteLine($"=== REGISTRO DE USUARIOS ({predeterminados[i]}) ===");
-                Console.Write("Cree la contraseña: ");
-                ingreso1 = LeerPassword();
-                Console.Write("Confirme la contraseña: ");
-                ingreso2 = LeerPassword();
-
-                if (!string.IsNullOrWhiteSpace(ingreso1) && ingreso1 == ingreso2)
-                {
-                    contraseñasGuardadas[i] = ingreso1;
-                    coinciden = true;
-                    Console.WriteLine("\nContraseña guardada correctamente.");
-                }
-                else
-                {
-                    Console.WriteLine("\nError: Las contraseñas no coinciden o están vacías. Intente de nuevo.");
-                }
-                Console.WriteLine("\nPresione cualquier tecla para continuar...");
-                Console.ReadKey();
-                Console.Clear();
-            }
-        }
-        return contraseñasGuardadas;
-    }
-
-    //----------------------------------------------------------------------------------------
     static void CompraProducto(List<string> productos, List<int> cantidadProd,
                                 List<double> precioProd, string archivoInventario, Stack<double> presupuesto)
     {
@@ -304,6 +345,13 @@ internal class Program
                 }
                 else
                 {
+                    if (string.IsNullOrWhiteSpace(producto))
+                    {
+                        Console.Write("\n Error: No puede estar vacío.\n...");
+                        Console.ReadKey();
+                        Console.Clear();
+                        continue;
+                    }
                     Console.WriteLine("\n¡¡PRODUCTO NUEVO!!");
                     Console.Write("\nIngrese el precio por unidad: ");
                     precio = double.Parse(Console.ReadLine());
@@ -619,7 +667,6 @@ internal class Program
             usuarios.Add("caja1");
             contraseñas.Add("1234");
             roles.Add("Caja");
-
             GuardarUsuariosEnArchivo(usuarios, contraseñas, roles, archivoUsuarios);
             return;
         }
@@ -719,7 +766,7 @@ internal class Program
             }
             else
             {
-                Console.WriteLine("\n[❌] Las contraseñas no coinciden o están vacías. Intente de nuevo.");
+                Console.WriteLine("\nLas contraseñas no coinciden o están vacías. Intente de nuevo.");
             }
         }
 
@@ -729,7 +776,7 @@ internal class Program
 
         GuardarUsuariosEnArchivo(usuarios, contraseñas, roles, archivoUsuarios);
 
-        Console.WriteLine($"\n[✅] Usuario '{nuevoUsuario}' creado con éxito con el rol de '{rolSeleccionado}'.");
+        Console.WriteLine($"\nUsuario '{nuevoUsuario}' creado con éxito con el rol de '{rolSeleccionado}'.");
         Console.WriteLine("Presione cualquier tecla para continuar...");
         Console.ReadKey();
     }
@@ -774,7 +821,7 @@ internal class Program
 
                 GuardarUsuariosEnArchivo(usuarios, contraseñas, roles, archivoUsuarios);
 
-                Console.WriteLine($"\n[✅] El usuario '{usuarioBorrado}' ha sido removido del sistema.");
+                Console.WriteLine($"\nEl usuario '{usuarioBorrado}' ha sido removido del sistema.");
             }
             else
             {
@@ -783,7 +830,7 @@ internal class Program
         }
         else
         {
-            Console.WriteLine("\n[❌] El usuario no existe en el sistema.");
+            Console.WriteLine("\n El usuario no existe en el sistema.");
         }
 
         Console.WriteLine("\nPresione cualquier tecla para regresar...");
