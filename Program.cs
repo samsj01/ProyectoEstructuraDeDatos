@@ -145,13 +145,27 @@ internal class Program
                                   List<int> cantidadProd, List<double> precioProd, string archivoInventario, Stack<double> presupuesto, string archivoUsuarios)
     {
         bool volver = false;
-        int ancho = 40;
+        int ancho = 32;
         int alto = 20;
-        int rangex = (Console.WindowWidth / 2) - (ancho / 2);
-        int rangey = (Console.WindowHeight / 2) - (alto / 2);
+        
         while (!volver)
         {
             Console.Clear();
+            if (productos.Count != 0)
+            {
+                for (int i = 0; i < productos.Count; i++)
+                {
+                    if (cantidadProd[i] <= 5)
+                    {
+                        AlertaInventario(cantidadProd);
+                        break;
+                    }
+                }
+            }
+
+            int rangex = (Console.WindowWidth / 2) - (ancho / 2);
+            int rangey = (Console.WindowHeight / 2) - (alto / 2);
+            
             Console.SetCursorPosition(rangex,rangey);
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.Write(" === MENÚ DE ADMINISTRADOR === ");
@@ -164,59 +178,62 @@ internal class Program
             Console.Write("2. Comprar Productos");
 
             Console.SetCursorPosition(rangex, rangey + 3);
-            Console.Write("3. Realizar Venta ");
+            Console.Write("3. Realizar Venta");
 
             Console.SetCursorPosition(rangex, rangey + 4);
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write("4. Crear un usuario nuevo");
-            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write("4. Editar Inventario");
 
             Console.SetCursorPosition(rangex, rangey + 5);
-            Console.Write("5. Eliminar un usuario");
-            Console.ForegroundColor = ConsoleColor.Red;
-
-            Console.SetCursorPosition(rangex, rangey + 6);
-            Console.Write("6. Salir");
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write("5. Crear un usuario nuevo");
             Console.ForegroundColor = ConsoleColor.White;
 
-            Console.SetCursorPosition(rangex + 10, rangey + 8);
+            Console.SetCursorPosition(rangex, rangey + 6);
+            Console.Write("6. Eliminar un usuario");
+            Console.ForegroundColor = ConsoleColor.Red;
+
+            Console.SetCursorPosition(rangex, rangey + 7);
+            Console.Write("7. Salir");
+            Console.ForegroundColor = ConsoleColor.White;
+
+            Console.SetCursorPosition(rangex + 10, rangey + 9);
             Console.Write("Opción");
             for (int x = 0; x < 16; x++)
             {
-                Console.SetCursorPosition(rangex + 5 + x, rangey + 10);
+                Console.SetCursorPosition(rangex + 5 + x, rangey + 11);
                 Console.Write("─"); // Línea opcion
             }
-            Console.SetCursorPosition(rangex + 5, rangey + 9);
+            Console.SetCursorPosition(rangex + 5, rangey + 10);
             string op = Console.ReadLine();
 
-            if (op == "1")
+            switch (op)
             {
-                Inventario(productos, cantidadProd, precioProd, presupuesto);
-            }
-            else if (op == "2")
-            {
-                CompraProducto(productos, cantidadProd, precioProd, archivoInventario, presupuesto);
-            }
-            else if (op == "3")
-            {
-                VenderProductos(productos, cantidadProd, precioProd, archivoInventario, presupuesto);
-            }
-            else if (op == "4")
-            {
-                RegistrarNuevoUsuario(usuarios, contraseñas, roles, archivoUsuarios);
-            }
-            else if (op == "5")
-            {
-                EliminarUsuario(usuarios, contraseñas, roles, archivoUsuarios);
-            }
-            else if (op == "6")
-            {
-                volver = true;
-                Salir(usuarios, contraseñas, roles, productos, cantidadProd, precioProd, archivoInventario, presupuesto, archivoUsuarios);
-            }
-            else
-            {
-                Console.Clear();
+                case "1":
+                    Inventario(productos, cantidadProd, precioProd, presupuesto);
+                    break;
+                case "2":
+                    CompraProducto(productos, cantidadProd, precioProd, archivoInventario, presupuesto);
+                    break;
+                case "3":
+                    VenderProductos(productos, cantidadProd, precioProd, archivoInventario, presupuesto);
+                    break;
+                case "4":
+                    EditarInventario(productos, cantidadProd, precioProd, presupuesto, archivoInventario);
+                    break;
+                case "5":
+                    RegistrarNuevoUsuario(usuarios, contraseñas, roles, archivoUsuarios);
+                    break;
+                case "6":
+                    EliminarUsuario(usuarios, contraseñas, roles, archivoUsuarios);
+                    break;
+                case "7":
+                    volver = true;
+                    Salir(usuarios, contraseñas, roles, productos, cantidadProd, precioProd, 
+                        archivoInventario, presupuesto, archivoUsuarios);
+                    break;
+                default:
+                    Console.Clear();
+                    break;
             }
         }
     }
@@ -226,18 +243,51 @@ internal class Program
                               List<int> cantidadProd, List<double> precioProd, string archivoInventario, Stack<double> presupuesto, string archivoUsuarios)
     {
         bool volver = false;
+        int ancho = 28;
+        int alto = 20;
+        
         while (!volver)
         {
             Console.Clear();
+            if(productos.Count != 0)
+            {
+                for (int i = 0; i < productos.Count; i++)
+                {
+                    if (cantidadProd[i] <= 5)
+                    {
+                        AlertaInventario(cantidadProd);
+                        break;
+                    }
+                }
+            }
+            
+            int rangex = (Console.WindowWidth / 2) - (ancho / 2);
+            int rangey = (Console.WindowHeight / 2) - (alto / 2);
+            
+            Console.SetCursorPosition(rangex, rangey);
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine(" === MENÚ DE ALMACÉN === ");
             Console.ForegroundColor = ConsoleColor.White;
+
+            Console.SetCursorPosition(rangex, rangey+1);
             Console.WriteLine("1. Ver Inventario ");
+
+            Console.SetCursorPosition(rangex, rangey+2);
             Console.WriteLine("2. Cargar Stock de Productos");
+
+            Console.SetCursorPosition(rangex, rangey+3);
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("3. Salir");
             Console.ForegroundColor = ConsoleColor.White;
-            Console.Write("Opción: ");
+            
+            Console.SetCursorPosition(rangex + 10, rangey + 5);
+            Console.Write("Opción");
+            for (int x = 0; x < 16; x++)
+            {
+                Console.SetCursorPosition(rangex + 5 + x, rangey + 7);
+                Console.Write("─"); // Línea opcion
+            }
+            Console.SetCursorPosition(rangex + 5, rangey + 6);
             string op = Console.ReadLine();
 
             if (op == "1")
@@ -265,18 +315,49 @@ internal class Program
                          List<int> cantidadProd, List<double> precioProd, string archivoInventario, Stack<double> presupuesto, string archivoUsuarios)
     {
         bool volver = false;
+        int ancho = 24;
+        int alto = 20;
         while (!volver)
         {
             Console.Clear();
+            if (productos.Count != 0)
+            {
+                for (int i = 0; i < productos.Count; i++)
+                {
+                    if (cantidadProd[i] <= 5)
+                    {
+                        AlertaInventario(cantidadProd);
+                        break;
+                    }
+                }
+            }
+            int rangex = (Console.WindowWidth / 2) - (ancho / 2);
+            int rangey = (Console.WindowHeight / 2) - (alto / 2);
+            
+            Console.SetCursorPosition(rangex, rangey);
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine(" === MENÚ DE CAJA === ");
             Console.ForegroundColor = ConsoleColor.White;
+
+            Console.SetCursorPosition(rangex, rangey +1);
             Console.WriteLine("1. Realizar Venta");
+
+            Console.SetCursorPosition(rangex, rangey +2);
             Console.WriteLine("2. Consultar Inventario");
+
+            Console.SetCursorPosition(rangex, rangey +3);
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("3. Salir");
             Console.ForegroundColor = ConsoleColor.White;
-            Console.Write("Opción: ");
+
+            Console.SetCursorPosition(rangex + 10, rangey + 5);
+            Console.Write("Opción");
+            for (int x = 0; x < 16; x++)
+            {
+                Console.SetCursorPosition(rangex + 5 + x, rangey + 7);
+                Console.Write("─"); // Línea opcion
+            }
+            Console.SetCursorPosition(rangex + 5, rangey + 6);
             string op = Console.ReadLine();
 
             if (op == "1")
@@ -835,5 +916,142 @@ internal class Program
 
         Console.WriteLine("\nPresione cualquier tecla para regresar...");
         Console.ReadKey();
+    }
+
+    //----------------------------------------------------------------------------------------
+    static void AlertaInventario(List<int> cantidadProd)
+    {
+        int ancho = 30;
+        int alto = 10;
+        int rangex = (Console.WindowWidth / 2) - (ancho / 2);
+        int rangey = (Console.WindowHeight / 2) - (alto / 2);
+
+        Console.ForegroundColor = ConsoleColor.DarkRed;
+        for (int x = 1; x < ancho; x++)
+        {
+            Console.SetCursorPosition(rangex + x, rangey);
+            Console.Write("─"); // Línea superior
+
+            Console.SetCursorPosition(rangex + x, rangey + alto);
+            Console.Write("─"); // Línea inferior
+        }
+
+
+        for (int y = 1; y < alto; y++)
+        {
+            Console.SetCursorPosition(rangex, rangey + y);
+            Console.Write("│"); // Línea izquierda
+
+            Console.SetCursorPosition(rangex + ancho, rangey + y);
+            Console.Write("│"); // Línea derecha
+        }
+
+        Console.SetCursorPosition(rangex, rangey);
+        Console.Write("┌"); // Esquina superior izquierda
+
+        Console.SetCursorPosition(rangex + ancho, rangey);
+        Console.Write("┐"); // Esquina superior derecha
+
+        Console.SetCursorPosition(rangex, rangey + alto);
+        Console.Write("└"); // Esquina inferior izquierda
+
+        Console.SetCursorPosition(rangex + ancho, rangey + alto);
+        Console.Write("┘"); // Esquina inferior derecha
+
+        Console.SetCursorPosition(rangex + 10, rangey + 2);
+        Console.Write("¡¡¡ALERTA!!!");
+        Console.SetCursorPosition(rangex + 5, rangey + 4);
+        Console.Write("Hay productos que estan");
+        Console.SetCursorPosition(rangex + 10, rangey + 5);
+        Console.Write("por acabarse");
+
+        Console.SetCursorPosition(rangex + 8, rangey + 7);
+        Console.Write("VOLVER AL MENÚ...");
+
+        Console.ReadKey();
+        Console.Clear();
+        return;
+
+    }
+    //----------------------------------------------------------------------------------------
+    static void EditarInventario(List<string> productos, List<int> cantidadProd, List<double> precioProd, 
+        Stack<double> presupuesto, string archivoInventario)
+    {
+        Console.Clear();
+        if (productos.Count == 0)
+        {
+            Console.Write("Inventario vacio...");
+            Console.ReadKey();
+
+            return;
+        }
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine("EDICIÓN DE INVENTARIO");
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.Write("Ingrese el nombre del producto que desee cambiar: ");
+        string produc = Console.ReadLine().ToLower();
+        int indice = productos.IndexOf(produc);
+        double nvPrecio;
+        string nvNombre;
+        int nvCantidad;
+        if (indice != -1)
+        {
+            Console.WriteLine($"El producto {produc} Está en el inventario");
+            Console.WriteLine("1) Cambiar precio\n" +
+                              "2) Cambiar Nombre\n" +
+                              "3) Cambiar Cantidad");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("4) Eliminar Producto");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write("Opcion: ");
+            string op = Console.ReadLine();
+            Console.ReadKey();
+            Console.Clear();
+
+
+            if (op == "1")
+            {
+                Console.WriteLine($"Producto: {productos[indice]} ");
+                Console.WriteLine($"Precio de compra: {precioProd[indice]} ");
+                Console.WriteLine($"Precio en caja: {precioProd[indice] / 0.8} ");
+                Console.WriteLine("Ingrese el nuevo precio");
+                nvPrecio = double.Parse(Console.ReadLine());
+                precioProd[indice] = nvPrecio;
+                GuardarInventario(productos, precioProd, cantidadProd, archivoInventario);
+            }
+            else if (op == "2")
+            {
+                Console.WriteLine($"Producto: {productos[indice]} ");
+                Console.WriteLine("Ingrese el nuevo Nombre");
+                nvNombre = Console.ReadLine();
+                productos[indice] = nvNombre;
+                GuardarInventario(productos, precioProd, cantidadProd, archivoInventario);
+            }
+            else if (op == "3")
+            {
+                Console.WriteLine($"Producto: {productos[indice]} ");
+                Console.WriteLine($"Cantidad: {cantidadProd[indice]} ");
+                Console.WriteLine("Ingrese el nuevo Nombre");
+                nvCantidad = int.Parse(Console.ReadLine());
+                cantidadProd[indice] = nvCantidad;
+                GuardarInventario(productos, precioProd, cantidadProd, archivoInventario);
+            }
+            else if (op == "4")
+            {
+                Console.WriteLine($"Producto: {productos[indice]} ");
+                Console.WriteLine($"Cantidad: {cantidadProd[indice]} ");
+                Console.WriteLine($"Precio de compra: {precioProd[indice]} ");
+                Console.WriteLine($"Precio en caja: {precioProd[indice] / 0.8} ");
+                productos.RemoveAt(indice);
+                cantidadProd.RemoveAt(indice);
+                precioProd.RemoveAt(indice);
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Producto Eliminado");
+                Console.ForegroundColor = ConsoleColor.White;
+                GuardarInventario(productos, precioProd, cantidadProd, archivoInventario);
+            }
+        }
+        Console.Clear();
+
     }
 }
