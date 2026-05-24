@@ -405,7 +405,7 @@ internal class Program
                 int indice = productos.IndexOf(producto);
                 if (indice != -1)
                 {
-                    
+
                     Console.WriteLine($"\nEl producto ya se encuentra en el inventario {producto}. Precio actual: {precioProd[indice]}");
                     Console.Write("\nIngrese la cantidad de unidades que desee agregar: ");
                     while (!int.TryParse(Console.ReadLine(), out cantidad) || cantidad < 0)
@@ -497,23 +497,23 @@ internal class Program
             if (addProduct == "no") salir = true;
         }
         Console.Clear();
-        
+
         if (compraNombres.Count > 0)
         {
-            GenerarFacturaCompra(compraNombres, compraCantidades, compraPrecios);
+            GenerarFactura(compraNombres, compraCantidades, compraPrecios, "Compra");
         }
 
         return;
     }
     // ============================================================================
-    static void GenerarFacturaCompra(List<string> nombres, List<int> cantidades, List<double> precios)
+    static void GenerarFactura(List<string> nombres, List<int> cantidades, List<double> precios, string tipo)
     {
         Console.Clear();
         double totalInversion = 0;
-        
+
 
         Console.WriteLine("============================================");
-        Console.WriteLine("          FACTURA DE COMPRA       ");
+        Console.WriteLine($"          FACTURA DE {tipo.ToUpper()}       ");
         Console.WriteLine("============================================");
         Console.WriteLine("{0,-20} {1,-7} {2,-12}", "PRODUCTO", "CANT.", "COSTO UNIT.");
         Console.WriteLine("--------------------------------------------");
@@ -526,7 +526,7 @@ internal class Program
         }
 
         Console.WriteLine("--------------------------------------------");
-        Console.WriteLine($"TOTAL INVERTIDO:              {totalInversion,12:C}");
+        Console.WriteLine($"TOTAL {tipo.ToUpper()}:              {totalInversion,12:C}");
         Console.WriteLine("============================================");
         Console.WriteLine("\n¡Inventario reabastecido con éxito!");
         Console.WriteLine("\nPresione cualquier tecla para continuar...");
@@ -608,7 +608,7 @@ internal class Program
             string buscarProd = Console.ReadLine().ToLower();
             int indice = productos.IndexOf(buscarProd);
 
-            if (indice != -1)
+            if (indice != -1 && cantidadProd[indice] > 0)
             {
                 double priceVentaUnitario = precioProd[indice] / 0.8;
                 if (cantidadProd[indice] <= 5)
@@ -650,7 +650,7 @@ internal class Program
             }
             else
             {
-                Console.WriteLine("ERROR: El producto no existe.");
+                Console.WriteLine("ERROR: El producto no existe o esta agotado.");
             }
 
             while (true)
@@ -665,39 +665,9 @@ internal class Program
 
         if (carritoNombres.Count > 0)
         {
-            GenerarFacturaFinal(carritoNombres, carritoCantidades, carritoPreciosUnitarios);
+            GenerarFactura(carritoNombres, carritoCantidades, carritoPreciosUnitarios, "Venta");
         }
     }
-
-    static void GenerarFacturaFinal(List<string> nombres, List<int> cantidades, List<double> precios)
-    {
-        Console.Clear();
-        double totalFinal = 0;
-
-        Console.WriteLine("============================================");
-        Console.WriteLine("              FACTURA DE VENTA               ");
-        Console.WriteLine("============================================");
-        Console.WriteLine("{0,-20} {1,-7} {2,-12}", "PRODUCTO", "CANT.", "SUBTOTAL");
-        Console.WriteLine("--------------------------------------------");
-
-        for (int i = 0; i < nombres.Count; i++)
-        {
-            double subtotal = cantidades[i] * precios[i];
-            totalFinal += subtotal;
-            Console.WriteLine("{0,-20} {1,-7} {2,-12:C}", nombres[i].ToUpper(), cantidades[i], subtotal);
-        }
-
-        Console.WriteLine("--------------------------------------------");
-        Console.WriteLine($"TOTAL A PAGAR:                {totalFinal,12:C}");
-        Console.WriteLine("============================================");
-        Console.WriteLine("\n¡Gracias por su compra!");
-        Console.WriteLine("\nPresione cualquier tecla para finalizar...");
-        Console.ReadKey();
-        Console.Clear();
-    }
-
-    
-    
 
     // ============ FUNCIONES AUXILIARES ============
     static void GuardarInventario(List<string> producto, List<double> precio, List<int> cantidad, string archivoInventario)
@@ -836,20 +806,71 @@ internal class Program
     {
         Console.Clear();
         string salir;
+        int ancho = 52;
+        int alto = 8;
         do
         {
+            int rangex = (Console.WindowWidth / 2) - (ancho / 2);
+            int rangey = (Console.WindowHeight / 2) - (alto / 2);
+            Console.CursorVisible = false;
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            for (int x = 1; x < ancho; x++)
+            {
+                Console.SetCursorPosition(rangex + x, rangey);
+                Console.Write("─"); // Línea superior
+
+                Console.SetCursorPosition(rangex + x, rangey + alto);
+                Console.Write("─"); // Línea inferior
+            }
+
+
+            for (int y = 1; y < alto; y++)
+            {
+                Console.SetCursorPosition(rangex, rangey + y);
+                Console.Write("│"); // Línea izquierda
+
+                Console.SetCursorPosition(rangex + ancho, rangey + y);
+                Console.Write("│"); // Línea derecha
+            }
+
+            Console.SetCursorPosition(rangex, rangey);
+            Console.Write("┌"); // Esquina superior izquierda
+
+            Console.SetCursorPosition(rangex + ancho, rangey);
+            Console.Write("┐"); // Esquina superior derecha
+
+            Console.SetCursorPosition(rangex, rangey + alto);
+            Console.Write("└"); // Esquina inferior izquierda
+
+            Console.SetCursorPosition(rangex + ancho, rangey + alto);
+            Console.Write("┘"); // Esquina inferior derecha
+
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.SetCursorPosition(rangex + 2, rangey + 2);
             Console.WriteLine("¿DESEA CERRAR SESIÓN Y VOLVER AL LOGIN? (si o no)");
+            Console.SetCursorPosition(rangex + 25, rangey + 4);
+            Console.Write("Opción");
+            for (int x = 0; x < 16; x++)
+            {
+                Console.SetCursorPosition(rangex + 20 + x, rangey + 6);
+                Console.Write("─"); // Línea opcion
+            }
+            Console.CursorVisible = true;
+            Console.SetCursorPosition(rangex +20, rangey + 5);
             salir = Console.ReadLine().ToLower();
             if (salir == "si")
             {
                 // Cerramos sesión devolviendo al Login
-                MenuPrincipal(usuarios, contraseñas, roles, productos, cantidadProd, precioProd, archivoInventario, presupuesto, archivoUsuarios);
+                MenuPrincipal(usuarios, contraseñas, roles, productos, 
+                    cantidadProd, precioProd, archivoInventario, presupuesto, archivoUsuarios);
                 return;
             }
             else if (salir != "no")
             {
-                Console.Write("Ingrese un valor válido (si/no)\n...");
-                Console.ReadKey();
+                Console.Clear();
+            }
+            else
+            {
                 Console.Clear();
             }
         } while (salir != "si" && salir != "no");
@@ -1045,6 +1066,7 @@ internal class Program
     static void EditarInventario(List<string> productos, List<int> cantidadProd, List<double> precioProd,
         Stack<double> presupuesto, string archivoInventario)
     {
+        double saldoActual = presupuesto.Peek();
         Console.Clear();
         if (productos.Count == 0)
         {
@@ -1064,7 +1086,7 @@ internal class Program
         int nvCantidad;
         if (indice != -1)
         {
-            Console.WriteLine($"El producto {produc} Está en el inventario");
+            Console.WriteLine($"\nEl producto {produc} Está en el inventario\n");
             Console.WriteLine("1) Cambiar precio\n" +
                               "2) Cambiar Nombre\n" +
                               "3) Cambiar Cantidad");
@@ -1073,10 +1095,9 @@ internal class Program
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write("Opcion: ");
             string op = Console.ReadLine();
+            Console.Write("\n... ");
             Console.ReadKey();
             Console.Clear();
-
-
             if (op == "1")
             {
                 Console.WriteLine($"Producto: {productos[indice]} ");
@@ -1102,7 +1123,7 @@ internal class Program
                 Console.Write("Ingrese el nuevo Nombre: ");
                 while (!int.TryParse(Console.ReadLine(), out nvCantidad) || nvCantidad >= 0)
                 {
-                    Console.WriteLine("Error, ingre un número");
+                    Console.WriteLine("Error, ingrese un número");
                 }
                 cantidadProd[indice] = nvCantidad;
                 GuardarInventario(productos, precioProd, cantidadProd, archivoInventario);
@@ -1113,13 +1134,65 @@ internal class Program
                 Console.WriteLine($"Cantidad: {cantidadProd[indice]} ");
                 Console.WriteLine($"Precio de compra: {precioProd[indice]} ");
                 Console.WriteLine($"Precio en caja: {precioProd[indice] / 0.8} ");
-                productos.RemoveAt(indice);
-                cantidadProd.RemoveAt(indice);
-                precioProd.RemoveAt(indice);
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Producto Eliminado");
-                Console.ForegroundColor = ConsoleColor.White;
-                GuardarInventario(productos, precioProd, cantidadProd, archivoInventario);
+                string opc;
+                if (cantidadProd[indice] > 0)
+                {
+                    do
+                    {
+                        Console.Write("Este producto aun tiene unidades por vender\n¿Desea eliminarlo del inventario? (Si/No): ");
+                        opc = Console.ReadLine().ToLower();
+                        if (opc == "si")
+                        {
+                            double compra = 0;
+                            for (int i = 0; i < cantidadProd[indice]; i++)
+                            {
+                                compra += precioProd[indice];
+                            }
+                            presupuesto.Push(saldoActual);
+                            productos.RemoveAt(indice);
+                            cantidadProd.RemoveAt(indice);
+                            precioProd.RemoveAt(indice);
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Producto Eliminado");
+                            Console.ForegroundColor = ConsoleColor.White;
+                            RegistrarMovimiento(presupuesto, "Reembolso", compra);
+                            GuardarInventario(productos, precioProd, cantidadProd, archivoInventario);
+
+                            Console.Write("Presione cualquier tecla para volver al menu...");
+                            Console.ReadKey();
+                            Console.Clear();
+                        }
+                        else if (opc == "no")
+                        {
+                            Console.Write("Presione cualquier tecla para volver al menu...");
+                            Console.ReadKey();
+                            Console.Clear();
+                            return;
+                        }
+                        else
+                        {
+                            Console.Write("Opción no valida");
+                            Console.Write("\n... ");
+                            Console.ReadKey();
+                            Console.Clear();
+                        }
+                    } while (opc != "si" && op != "no");
+                }
+                else
+                {
+                    presupuesto.Push(saldoActual);
+                    productos.RemoveAt(indice);
+                    cantidadProd.RemoveAt(indice);
+                    precioProd.RemoveAt(indice);
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Producto Eliminado");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    CargarPresupuesto(presupuesto);
+                    GuardarInventario(productos, precioProd, cantidadProd, archivoInventario);
+                    Console.Write("Presione cualquier tecla para volver al menu...");
+                    Console.ReadKey();
+                    Console.Clear();
+                }
             }
             else
             {
@@ -1130,9 +1203,9 @@ internal class Program
         {
             Console.WriteLine("El Producto no existe");
         }
+        Console.Write("\n... ");
         Console.ReadKey();
         Console.Clear();
         return;
-
     }
 }
