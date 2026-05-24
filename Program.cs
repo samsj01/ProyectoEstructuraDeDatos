@@ -41,7 +41,7 @@ internal class Program
             int alto = 20;
             int rangex = (Console.WindowWidth / 2) - (ancho / 2);
             int rangey = (Console.WindowHeight / 2) - (alto / 2);
-            
+
 
             for (int x = 1; x < ancho; x++)
             {
@@ -52,7 +52,7 @@ internal class Program
                 Console.Write("─"); // Línea inferior
             }
 
-            
+
             for (int y = 1; y < alto; y++)
             {
                 Console.SetCursorPosition(rangex, rangey + y);
@@ -74,14 +74,14 @@ internal class Program
             Console.SetCursorPosition(rangex + ancho, rangey + alto);
             Console.Write("┘"); // Esquina inferior derecha
 
-        
+
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.SetCursorPosition(rangex + 8, rangey + 2);
             Console.Write("Bienvenidos al MiniMercado");
             Console.ForegroundColor = ConsoleColor.White;
             Console.SetCursorPosition(rangex + 17, rangey + 5);
             Console.Write("Usuario");
-            for (int x = 1; x < ancho/2; x++)
+            for (int x = 1; x < ancho / 2; x++)
             {
                 Console.SetCursorPosition(rangex + 10 + x, rangey + 8);
                 Console.Write("─"); // Línea usuario
@@ -135,7 +135,7 @@ internal class Program
             {
                 esCorrecto = false;
                 Console.Clear();
-                
+
             }
         }
     }
@@ -147,7 +147,7 @@ internal class Program
         bool volver = false;
         int ancho = 32;
         int alto = 20;
-        
+
         while (!volver)
         {
             Console.Clear();
@@ -165,8 +165,8 @@ internal class Program
 
             int rangex = (Console.WindowWidth / 2) - (ancho / 2);
             int rangey = (Console.WindowHeight / 2) - (alto / 2);
-            
-            Console.SetCursorPosition(rangex,rangey);
+
+            Console.SetCursorPosition(rangex, rangey);
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.Write(" === MENÚ DE ADMINISTRADOR === ");
             Console.ForegroundColor = ConsoleColor.White;
@@ -228,7 +228,7 @@ internal class Program
                     break;
                 case "7":
                     volver = true;
-                    Salir(usuarios, contraseñas, roles, productos, cantidadProd, precioProd, 
+                    Salir(usuarios, contraseñas, roles, productos, cantidadProd, precioProd,
                         archivoInventario, presupuesto, archivoUsuarios);
                     break;
                 default:
@@ -245,11 +245,11 @@ internal class Program
         bool volver = false;
         int ancho = 28;
         int alto = 20;
-        
+
         while (!volver)
         {
             Console.Clear();
-            if(productos.Count != 0)
+            if (productos.Count != 0)
             {
                 for (int i = 0; i < productos.Count; i++)
                 {
@@ -260,26 +260,26 @@ internal class Program
                     }
                 }
             }
-            
+
             int rangex = (Console.WindowWidth / 2) - (ancho / 2);
             int rangey = (Console.WindowHeight / 2) - (alto / 2);
-            
+
             Console.SetCursorPosition(rangex, rangey);
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine(" === MENÚ DE ALMACÉN === ");
             Console.ForegroundColor = ConsoleColor.White;
 
-            Console.SetCursorPosition(rangex, rangey+1);
+            Console.SetCursorPosition(rangex, rangey + 1);
             Console.WriteLine("1. Ver Inventario ");
 
-            Console.SetCursorPosition(rangex, rangey+2);
+            Console.SetCursorPosition(rangex, rangey + 2);
             Console.WriteLine("2. Cargar Stock de Productos");
 
-            Console.SetCursorPosition(rangex, rangey+3);
+            Console.SetCursorPosition(rangex, rangey + 3);
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("3. Salir");
             Console.ForegroundColor = ConsoleColor.White;
-            
+
             Console.SetCursorPosition(rangex + 10, rangey + 5);
             Console.Write("Opción");
             for (int x = 0; x < 16; x++)
@@ -333,19 +333,19 @@ internal class Program
             }
             int rangex = (Console.WindowWidth / 2) - (ancho / 2);
             int rangey = (Console.WindowHeight / 2) - (alto / 2);
-            
+
             Console.SetCursorPosition(rangex, rangey);
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine(" === MENÚ DE CAJA === ");
             Console.ForegroundColor = ConsoleColor.White;
 
-            Console.SetCursorPosition(rangex, rangey +1);
+            Console.SetCursorPosition(rangex, rangey + 1);
             Console.WriteLine("1. Realizar Venta");
 
-            Console.SetCursorPosition(rangex, rangey +2);
+            Console.SetCursorPosition(rangex, rangey + 2);
             Console.WriteLine("2. Consultar Inventario");
 
-            Console.SetCursorPosition(rangex, rangey +3);
+            Console.SetCursorPosition(rangex, rangey + 3);
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("3. Salir");
             Console.ForegroundColor = ConsoleColor.White;
@@ -389,6 +389,9 @@ internal class Program
         int cantidad;
         bool salir = false;
         double saldoProvicional = saldoActual;
+        List<string> compraNombres = new List<string>();
+        List<int> compraCantidades = new List<int>();
+        List<double> compraPrecios = new List<double>();
         while (!salir)
         {
             do
@@ -402,6 +405,7 @@ internal class Program
                 int indice = productos.IndexOf(producto);
                 if (indice != -1)
                 {
+                    
                     Console.WriteLine($"\nEl producto ya se encuentra en el inventario {producto}. Precio actual: {precioProd[indice]}");
                     Console.Write("\nIngrese la cantidad de unidades que desee agregar: ");
                     while (!int.TryParse(Console.ReadLine(), out cantidad) || cantidad < 0)
@@ -425,6 +429,9 @@ internal class Program
                         Console.WriteLine("\nLa compra ha sido exitosa.");
                         tipo = "Gasto";
                         saldoProvicional -= compraTotal;
+                        compraNombres.Add(producto);
+                        compraCantidades.Add(cantidad);
+                        compraPrecios.Add(precio);
                     }
                     Console.WriteLine($"SALDO ACTUAL: {saldoProvicional:C}");
                     cantidadProd[indice] += cantidad;
@@ -467,6 +474,9 @@ internal class Program
                         Console.WriteLine("\nLa compra ha sido exitosa.");
                         saldoProvicional -= compraTotal;
                         tipo = "Gasto";
+                        compraNombres.Add(producto);
+                        compraCantidades.Add(cantidad);
+                        compraPrecios.Add(precio);
                     }
                     Console.WriteLine($"SALDO ACTUAL: {saldoProvicional:C}");
                     productos.Add(producto);
@@ -487,8 +497,44 @@ internal class Program
             if (addProduct == "no") salir = true;
         }
         Console.Clear();
+        
+        if (compraNombres.Count > 0)
+        {
+            GenerarFacturaCompra(compraNombres, compraCantidades, compraPrecios);
+        }
+
         return;
     }
+    // ============================================================================
+    static void GenerarFacturaCompra(List<string> nombres, List<int> cantidades, List<double> precios)
+    {
+        Console.Clear();
+        double totalInversion = 0;
+        
+
+        Console.WriteLine("============================================");
+        Console.WriteLine("          FACTURA DE COMPRA       ");
+        Console.WriteLine("============================================");
+        Console.WriteLine("{0,-20} {1,-7} {2,-12}", "PRODUCTO", "CANT.", "COSTO UNIT.");
+        Console.WriteLine("--------------------------------------------");
+
+        for (int i = 0; i < nombres.Count; i++)
+        {
+            double subtotal = cantidades[i] * precios[i];
+            totalInversion += subtotal;
+            Console.WriteLine("{0,-20} {1,-7} {2,-12:C}", nombres[i].ToUpper(), cantidades[i], precios[i]);
+        }
+
+        Console.WriteLine("--------------------------------------------");
+        Console.WriteLine($"TOTAL INVERTIDO:              {totalInversion,12:C}");
+        Console.WriteLine("============================================");
+        Console.WriteLine("\n¡Inventario reabastecido con éxito!");
+        Console.WriteLine("\nPresione cualquier tecla para continuar...");
+        Console.ReadKey();
+        Console.Clear();
+    }
+
+
 
     //----------------------------------------------------------------------------------------
     static void Inventario(List<string> productos, List<int> cantidadProd, List<double> precioProd, Stack<double> presupuesto)
@@ -649,6 +695,9 @@ internal class Program
         Console.ReadKey();
         Console.Clear();
     }
+
+    
+    
 
     // ============ FUNCIONES AUXILIARES ============
     static void GuardarInventario(List<string> producto, List<double> precio, List<int> cantidad, string archivoInventario)
@@ -984,7 +1033,7 @@ internal class Program
 
         Console.SetCursorPosition(rangex + 9, rangey + 7);
         Console.Write("VOLVER AL MENÚ");
-        
+
 
         Console.ReadKey();
         Console.Clear();
@@ -993,7 +1042,7 @@ internal class Program
 
     }
     //----------------------------------------------------------------------------------------
-    static void EditarInventario(List<string> productos, List<int> cantidadProd, List<double> precioProd, 
+    static void EditarInventario(List<string> productos, List<int> cantidadProd, List<double> precioProd,
         Stack<double> presupuesto, string archivoInventario)
     {
         Console.Clear();
@@ -1051,7 +1100,7 @@ internal class Program
                 Console.WriteLine($"Producto: {productos[indice]} ");
                 Console.WriteLine($"Cantidad: {cantidadProd[indice]} ");
                 Console.Write("Ingrese el nuevo Nombre: ");
-                while(!int.TryParse(Console.ReadLine(), out nvCantidad)|| nvCantidad >= 0)
+                while (!int.TryParse(Console.ReadLine(), out nvCantidad) || nvCantidad >= 0)
                 {
                     Console.WriteLine("Error, ingre un número");
                 }
