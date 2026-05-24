@@ -856,12 +856,12 @@ internal class Program
                 Console.Write("─"); // Línea opcion
             }
             Console.CursorVisible = true;
-            Console.SetCursorPosition(rangex +20, rangey + 5);
+            Console.SetCursorPosition(rangex + 20, rangey + 5);
             salir = Console.ReadLine().ToLower();
             if (salir == "si")
             {
                 // Cerramos sesión devolviendo al Login
-                MenuPrincipal(usuarios, contraseñas, roles, productos, 
+                MenuPrincipal(usuarios, contraseñas, roles, productos,
                     cantidadProd, precioProd, archivoInventario, presupuesto, archivoUsuarios);
                 return;
             }
@@ -891,6 +891,13 @@ internal class Program
             Console.ReadKey();
             return;
         }
+        if (nuevoUsuario.Length > 15)
+        {
+            Console.WriteLine("\nError: El nombre de usuario no puede tener más de 11 caracteres.");
+            Console.WriteLine($"Tu propuesta tiene {nuevoUsuario.Length} caracteres. Inténtalo de nuevo.");
+            Console.ReadKey();
+            return;
+        }
 
         int existe = usuarios.FindIndex(u => u.ToLower() == nuevoUsuario.ToLower());
         if (existe != -1)
@@ -899,6 +906,7 @@ internal class Program
             Console.ReadKey();
             return;
         }
+
 
         string rolSeleccionado = "";
         bool rolValido = false;
@@ -917,22 +925,30 @@ internal class Program
             else { Console.WriteLine("Opción inválida. Seleccione un número del 1 al 3."); }
         }
 
+        // Registro de contraseñas con la nueva validación de longitud
         string pass1 = "", pass2 = "";
         bool claveValida = false;
         while (!claveValida)
         {
-            Console.Write($"\nAsigne una contraseña para {nuevoUsuario}: ");
+            Console.Write($"\nAsigne una contraseña para {nuevoUsuario} (máx. 10 caracteres): ");
             pass1 = LeerPassword();
             Console.Write("Confirme la contraseña: ");
             pass2 = LeerPassword();
 
-            if (!string.IsNullOrWhiteSpace(pass1) && pass1 == pass2)
+            // Comprobamos primero que no esté vacía y que coincidan
+            if (string.IsNullOrWhiteSpace(pass1) || pass1 != pass2)
             {
-                claveValida = true;
+                Console.WriteLine("\nLas contraseñas no coinciden o están vacías. Intente de nuevo.");
+            }
+            // NUEVA VALIDACIÓN: Controlar el tamaño máximo de la contraseña
+            else if (pass1.Length > 10)
+            {
+                Console.WriteLine($"\nError: La contraseña no puede tener más de 10 caracteres (ingresaste {pass1.Length}). Intente de nuevo.");
             }
             else
             {
-                Console.WriteLine("\nLas contraseñas no coinciden o están vacías. Intente de nuevo.");
+                // Si pasa ambos filtros, la contraseña es aceptada
+                claveValida = true;
             }
         }
 
