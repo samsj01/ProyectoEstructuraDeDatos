@@ -1252,9 +1252,9 @@ internal class Program
         else
         {
             Console.WriteLine("El Producto no existe");
+            Console.Write("\n... ");
+            Console.ReadKey();
         }
-        Console.Write("\n... ");
-        Console.ReadKey();
         Console.Clear();
         return;
     }
