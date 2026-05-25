@@ -414,7 +414,7 @@ internal class Program
 
                     Console.WriteLine($"\nEl producto ya se encuentra en el inventario {producto}. Precio actual: {precioProd[indice]}");
                     Console.Write("\nIngrese la cantidad de unidades que desee agregar: ");
-                    while (!int.TryParse(Console.ReadLine(), out cantidad) || cantidad < 0)
+                    while (!int.TryParse(Console.ReadLine(), out cantidad) || cantidad <= 0)
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.Write("Error: Ingrese una cantidad válida (número entero positivo): ");
@@ -452,14 +452,14 @@ internal class Program
                     }
                     Console.WriteLine("\n¡¡PRODUCTO NUEVO!!");
                     Console.Write("\nIngrese el precio por unidad: ");
-                    while (!double.TryParse(Console.ReadLine(), out precio) || precio < 0)
+                    while (!double.TryParse(Console.ReadLine(), out precio) || precio <= 0)
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.Write("Error: Ingrese una cantidad válida (número entero positivo): ");
                         Console.ForegroundColor = ConsoleColor.White;
                     }
                     Console.Write("\nIngrese la cantidad de unidades que desee comprar: ");
-                    while (!int.TryParse(Console.ReadLine(), out cantidad) || cantidad < 0)
+                    while (!int.TryParse(Console.ReadLine(), out cantidad) || cantidad <= 0)
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.Write("Error: Ingrese una cantidad válida (número entero positivo): ");
