@@ -184,26 +184,29 @@ internal class Program
             Console.Write("4. Editar Inventario");
 
             Console.SetCursorPosition(rangex, rangey + 5);
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write("5. Crear un usuario nuevo");
-            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write("5. Movimientos");
 
             Console.SetCursorPosition(rangex, rangey + 6);
-            Console.Write("6. Eliminar un usuario");
-            Console.ForegroundColor = ConsoleColor.Red;
-
-            Console.SetCursorPosition(rangex, rangey + 7);
-            Console.Write("7. Salir");
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write("6. Crear un usuario nuevo");
             Console.ForegroundColor = ConsoleColor.White;
 
-            Console.SetCursorPosition(rangex + 10, rangey + 9);
+            Console.SetCursorPosition(rangex, rangey + 7);
+            Console.Write("7. Eliminar un usuario");
+            Console.ForegroundColor = ConsoleColor.Red;
+
+            Console.SetCursorPosition(rangex, rangey + 8);
+            Console.Write("8. Salir");
+            Console.ForegroundColor = ConsoleColor.White;
+
+            Console.SetCursorPosition(rangex + 10, rangey + 10);
             Console.Write("Opción");
             for (int x = 0; x < 16; x++)
             {
-                Console.SetCursorPosition(rangex + 5 + x, rangey + 11);
+                Console.SetCursorPosition(rangex + 5 + x, rangey + 12);
                 Console.Write("─"); // Línea opcion
             }
-            Console.SetCursorPosition(rangex + 5, rangey + 10);
+            Console.SetCursorPosition(rangex + 5, rangey + 11);
             string op = Console.ReadLine();
 
             switch (op)
@@ -221,12 +224,15 @@ internal class Program
                     EditarInventario(productos, cantidadProd, precioProd, presupuesto, archivoInventario);
                     break;
                 case "5":
-                    RegistrarNuevoUsuario(usuarios, contraseñas, roles, archivoUsuarios);
+                    HistorialMovimientos();
                     break;
                 case "6":
-                    EliminarUsuario(usuarios, contraseñas, roles, archivoUsuarios);
+                    RegistrarNuevoUsuario(usuarios, contraseñas, roles, archivoUsuarios);
                     break;
                 case "7":
+                    EliminarUsuario(usuarios, contraseñas, roles, archivoUsuarios);
+                    break;
+                case "8":
                     volver = true;
                     Salir(usuarios, contraseñas, roles, productos, cantidadProd, precioProd,
                         archivoInventario, presupuesto, archivoUsuarios);
@@ -385,7 +391,7 @@ internal class Program
                                 List<double> precioProd, string archivoInventario, Stack<double> presupuesto)
     {
         double precio, compraTotal = 0, saldoActual = presupuesto.Peek();
-        string addProduct = "", producto, tipo = "Gasto";
+        string addProduct = "", producto;
         int cantidad;
         bool salir = false;
         double saldoProvicional = saldoActual;
@@ -427,7 +433,6 @@ internal class Program
                     else
                     {
                         Console.WriteLine("\nLa compra ha sido exitosa.");
-                        tipo = "Gasto";
                         saldoProvicional -= compraTotal;
                         compraNombres.Add(producto);
                         compraCantidades.Add(cantidad);
@@ -473,7 +478,6 @@ internal class Program
                     {
                         Console.WriteLine("\nLa compra ha sido exitosa.");
                         saldoProvicional -= compraTotal;
-                        tipo = "Gasto";
                         compraNombres.Add(producto);
                         compraCantidades.Add(cantidad);
                         compraPrecios.Add(precio);
@@ -485,7 +489,7 @@ internal class Program
                 }
 
                 GuardarInventario(productos, precioProd, cantidadProd, archivoInventario);
-                RegistrarMovimiento(presupuesto, tipo, compraTotal);
+                RegistrarMovimiento(presupuesto, "Compra", producto, cantidad, precio, compraTotal);
                 compraTotal = 0;
 
                 do
@@ -583,7 +587,8 @@ internal class Program
     }
 
     //----------------------------------------------------------------------------------------
-    static void VenderProductos(List<string> productos, List<int> cantidadProd, List<double> precioProd, string archivoInventario, Stack<double> presupuesto)
+    static void VenderProductos(List<string> productos, List<int> cantidadProd, 
+        List<double> precioProd, string archivoInventario, Stack<double> presupuesto)
     {
         if (productos.Count == 0)
         {
@@ -636,7 +641,7 @@ internal class Program
                         cantidadProd[indice] -= cantVenta;
 
                         double subtotal = cantVenta * priceVentaUnitario;
-                        RegistrarMovimiento(presupuesto, "Ingreso", subtotal);
+                        RegistrarMovimiento(presupuesto, "Venta", productos[indice], cantVenta, priceVentaUnitario, subtotal);
                         GuardarInventario(productos, precioProd, cantidadProd, archivoInventario);
 
                         Console.WriteLine($">> OK: {productos[indice].ToUpper()} añadido al carrito.");
@@ -731,27 +736,49 @@ internal class Program
             for (int i = 1; i < lineas.Length; i++)
             {
                 string[] datos = lineas[i].Split(';');
-                if (datos.Length >= 3)
+                if (datos.Length >= 7)
                 {
-                    pila.Push(double.Parse(datos[2]));
+                    pila.Push(double.Parse(datos[6]));
                 }
             }
         }
         else
         {
-            File.AppendAllText(archivoCostos, "Tipo;Monto;Saldo Nuevo" + Environment.NewLine);
+            File.AppendAllText(archivoCostos, "Fecha;Tipo;Producto;Cantidad;PrecioUnitario;Total;Saldo" + Environment.NewLine);
         }
 
-        if (pila.Count == 0) pila.Push(800000);
+        if (pila.Count == 0)
+        {
+            pila.Push(800000);
+        }
     }
 
     //----------------------------------------------------------------------------------------
-    static void RegistrarMovimiento(Stack<double> pila, string tipo, double monto)
+    static void RegistrarMovimiento(Stack<double> pila, string tipo, string producto, int cantidad, double precioUnit, double total)
     {
-        double saldoActual = pila.Peek();
-        double nuevoSaldo = (tipo == "Ingreso") ? saldoActual + monto : saldoActual - monto;
+        double saldoActual = 0;
+
+        if (pila.Count > 0)
+        {
+            saldoActual = pila.Peek();
+        }
+
+        double nuevoSaldo = 0;
+
+        if (tipo == "Reembolso" || tipo == "Venta")
+        {
+            nuevoSaldo = saldoActual + total;
+        }
+        else
+        {
+            nuevoSaldo = saldoActual - total;
+        }
         pila.Push(nuevoSaldo);
-        File.AppendAllText("costos_e_ingresos.csv", $"{tipo};{monto};{nuevoSaldo}" + Environment.NewLine);
+
+        string fecha = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
+        string linea = $"{fecha};{tipo};{producto};{cantidad};{precioUnit:F2};{total:F2};{nuevoSaldo:F2}";
+
+        File.AppendAllText("costos_e_ingresos.csv", linea + Environment.NewLine);
     }
 
     //----------------------------------------------------------------------------------------
@@ -1155,7 +1182,9 @@ internal class Program
                 {
                     do
                     {
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.Write("Este producto aun tiene unidades por vender\n¿Desea eliminarlo del inventario? (Si/No): ");
+                        Console.ForegroundColor = ConsoleColor.White;
                         opc = Console.ReadLine().ToLower();
                         if (opc == "si")
                         {
@@ -1165,13 +1194,18 @@ internal class Program
                                 compra += precioProd[indice];
                             }
                             presupuesto.Push(saldoActual);
-                            productos.RemoveAt(indice);
-                            cantidadProd.RemoveAt(indice);
-                            precioProd.RemoveAt(indice);
                             Console.ForegroundColor = ConsoleColor.Red;
                             Console.WriteLine("Producto Eliminado");
                             Console.ForegroundColor = ConsoleColor.White;
-                            RegistrarMovimiento(presupuesto, "Reembolso", compra);
+                            // Cuando el producto se añade con éxito:
+                            double subtotal = cantidadProd[indice] * precioProd[indice];
+                            RegistrarMovimiento(presupuesto, "Reembolso", productos[indice], cantidadProd[indice],
+                                precioProd[indice], subtotal);
+
+                            productos.RemoveAt(indice);
+                            cantidadProd.RemoveAt(indice);
+                            precioProd.RemoveAt(indice);
+
                             GuardarInventario(productos, precioProd, cantidadProd, archivoInventario);
 
                             Console.Write("Presione cualquier tecla para volver al menu...");
@@ -1223,5 +1257,39 @@ internal class Program
         Console.ReadKey();
         Console.Clear();
         return;
+    }
+    static void HistorialMovimientos()
+    {
+        Console.Clear();
+        string archivo = "costos_e_ingresos.csv";
+
+        if (!File.Exists(archivo))
+        {
+            Console.WriteLine("No hay movimientos registrados.");
+            Console.ReadKey();
+            return;
+        }
+
+        Console.WriteLine("==========================================================================================");
+        Console.WriteLine("{0,-20} | {1,-10} | {2,-15} | {3,-5} | {4,-10} | {5,-10}", 
+            "FECHA", "TIPO", "PRODUCTO", "CANT", "UNIT", "TOTAL");
+        Console.WriteLine("==========================================================================================");
+
+        string[] lineas = File.ReadAllLines(archivo);
+
+        for (int i = 1; i < lineas.Length; i++)
+        {
+            string[] datos = lineas[i].Split(';');
+            if (datos.Length >= 6)
+            {
+                // d[0]=Fecha, d[1]=Tipo, d[2]=Producto, d[3]=Cant, d[4]=PrecioU, d[5]=Total
+                Console.WriteLine("{0,-20} | {1,-10} | {2,-15} | {3,-5} | {4,-10} | {5,-10}",
+                    datos[0], datos[1], datos[2].ToUpper(), datos[3], datos[4], datos[5]);
+            }
+        }
+
+        Console.WriteLine("==========================================================================================");
+        Console.WriteLine("\nPresione cualquier tecla para volver...");
+        Console.ReadKey();
     }
 }
